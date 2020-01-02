@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="textinput_size">48dp</dimen>
+    <dimen name="textinput_padding_size">12dp</dimen>
+    <dimen name="corner_width">3dp</dimen>
+    <dimen name="textinput_bg_corner_radius">24dp</dimen>
+    <dimen name="logo_size">120dp</dimen>
+    <dimen name="cpv_size">56dp</dimen>
+</resources>
