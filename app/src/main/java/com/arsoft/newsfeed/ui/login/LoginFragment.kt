@@ -2,25 +2,27 @@ package com.arsoft.newsfeed.ui.login
 
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.app.NewsFeedApplication.Companion.prefs
 import com.arsoft.newsfeed.mvp.login.LoginPresenter
 import com.arsoft.newsfeed.mvp.login.LoginView
+import com.arsoft.newsfeed.ui.screens.Screens
 import kotlinx.android.synthetic.main.fragment_login.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
 class LoginFragment: MvpAppCompatFragment(), LoginView {
 
+    private val APP_PREFERENCES_ACCESS_TOKEN = "access_token"
 
     //MARK -
     companion object {
@@ -39,11 +41,13 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
     @ProvidePresenter
     internal fun providePresenter(): LoginPresenter {
         return LoginPresenter(router)
+
     }
 
     init {
         NewsFeedApplication.INSTANCE.getAppComponent()!!.inject(this)
         presenter = LoginPresenter(router)
+
     }
 
     override fun onCreateView(
@@ -52,17 +56,11 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-
-
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
         loginButton.setOnClickListener{
             if (usernameInput.text.toString() != "" && passwordInput.text.toString() != "") {
                 presenter.login(username = usernameInput.text.toString(), password = passwordInput.text.toString())
@@ -70,16 +68,18 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
                 Toast.makeText(context, "Введите правильные данные", Toast.LENGTH_SHORT).show()
             }
         }
+
+
     }
 
-    override fun startLoading() {
+    override fun showLoading() {
         usernameInput.visibility = View.INVISIBLE
         passwordInput.visibility = View.INVISIBLE
         loginButton.visibility = View.INVISIBLE
         loading_cpv.visibility = View.VISIBLE
     }
 
-    override fun stopLoading() {
+    override fun hideLoading() {
         usernameInput.visibility = View.VISIBLE
         passwordInput.visibility = View.VISIBLE
         loginButton.visibility = View.VISIBLE
@@ -87,11 +87,7 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
     }
 
     override fun saveAccessToken(accessToken: String) {
-        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
-        with (sharedPref.edit()) {
-            putString("access_token", accessToken)
-            commit()
-        }
+        prefs!!.accessToken = accessToken
     }
 
     override fun showError(message: String) {

@@ -7,4 +7,5 @@
     <string name="hello_txt">Добро пожаловать</string>
     <string name="login_description">Логин / Почта / Номер телефона</string>
     <string name="password">Пароль</string>
+    <string name="logout">Выйти</string>
 </resources>

@@ -6,8 +6,8 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface LoginView: MvpView {
-    fun startLoading()
-    fun stopLoading()
+    fun showLoading()
+    fun hideLoading()
     fun saveAccessToken(accessToken: String)
     fun showError(message: String)
 }

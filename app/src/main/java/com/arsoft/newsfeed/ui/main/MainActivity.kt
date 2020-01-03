@@ -1,10 +1,10 @@
 package com.arsoft.newsfeed.ui.main
 
-import android.content.Context
 import android.os.Bundle
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.app.prefs
 import com.arsoft.newsfeed.ui.screens.Screens
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.android.support.SupportAppNavigator
@@ -29,12 +29,12 @@ class MainActivity : MvpAppCompatActivity() {
         setContentView(R.layout.activity_main)
         NewsFeedApplication.INSTANCE.getAppComponent()!!.inject(this)
 
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return
-        val accessToken = sharedPref.getString("accessToken", null)
-        if (accessToken == null) {
-            navigator.applyCommands(arrayOf(Replace(Screens.LoginScreen())))
+        val accessToken = prefs.accessToken
+
+        if (accessToken != "0") {
+            navigator.applyCommands(arrayOf(Replace(Screens.NewsFeedScreen(accessToken = accessToken))))
         } else {
-            navigator.applyCommands(arrayOf(Replace(Screens.NewsFeedScreen(accessToken))))
+            navigator.applyCommands(arrayOf(Replace(Screens.LoginScreen())))
         }
     }
 
