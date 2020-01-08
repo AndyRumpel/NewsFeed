@@ -6,7 +6,7 @@ import io.reactivex.Single
 
 class NewsFeedRepository(val apiService: NewsFeedService) {
 
-    fun getNewsFeed(count: Int, accessToken: String, version: String): Single<NewsFeedResponse>{
-        return apiService.getNewsFeed(count = count, accessToken = accessToken, version = version)
+    fun getNewsFeed(count: Int, accessToken: String, version: String, filters: String): Single<NewsFeedResponse>{
+        return apiService.getNewsFeed(count = count, accessToken = accessToken, version = version, filters = filters)
     }
 }

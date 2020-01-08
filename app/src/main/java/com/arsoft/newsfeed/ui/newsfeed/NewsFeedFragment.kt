@@ -2,9 +2,13 @@ package com.arsoft.newsfeed.ui.newsfeed
 
 import android.os.Bundle
 import android.view.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
+import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedResponse
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
@@ -16,6 +20,8 @@ import javax.inject.Inject
 
 class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: NewsFeedRecyclerAdapter
 
     companion object{
         fun getNewInstance(accessToken: String) = NewsFeedFragment().apply {
@@ -37,6 +43,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_newsfeed, container, false)
+        recyclerView = view.findViewById(R.id.newsfeed_recycler)
         return view
     }
 
@@ -47,11 +54,13 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
             presenter.loadNewsFeed(arguments?.getString("access_token")!!)
         }
 
-
+        adapter = NewsFeedRecyclerAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.newsfeed_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -71,13 +80,18 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
     //MARK - View implementation
 
     override fun loadNewsFeed(model: NewsFeedResponse) {
-        text.text = model.toString()
+        adapter.setupNewsFeedList(model)
+        adapter.notifyDataSetChanged()
     }
 
     override fun showLoading() {
+        recyclerView.visibility = View.INVISIBLE
+        newsfeed_cpv.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
+        recyclerView.visibility = View.VISIBLE
+        newsfeed_cpv.visibility = View.INVISIBLE
     }
 
     override fun showEmptyList() {

@@ -6,4 +6,6 @@
     <dimen name="textinput_bg_corner_radius">24dp</dimen>
     <dimen name="logo_size">120dp</dimen>
     <dimen name="cpv_size">56dp</dimen>
+    <dimen name="post_avatar_size">56dp</dimen>
+    <dimen name="margin_all">2dp</dimen>
 </resources>

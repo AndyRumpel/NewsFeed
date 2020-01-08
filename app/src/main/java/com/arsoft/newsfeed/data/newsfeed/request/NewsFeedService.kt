@@ -13,7 +13,8 @@ interface NewsFeedService {
     fun getNewsFeed(
         @Query("count") count: Int,
         @Query("access_token") accessToken: String,
-        @Query("v") version: String
+        @Query("v") version: String,
+        @Query("filters") filters: String
     ): Single<NewsFeedResponse>
 
     companion object Factory {

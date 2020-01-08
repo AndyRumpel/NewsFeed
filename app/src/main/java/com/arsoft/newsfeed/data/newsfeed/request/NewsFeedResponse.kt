@@ -17,7 +17,7 @@ data class Comments (
 
 data class Groups (
 
-    val id : Int,
+    val id : Long,
     val name : String,
     val screen_name : String,
     val is_closed : Int,
@@ -36,7 +36,7 @@ data class Items (
     val can_set_category : Boolean,
     val topic_id : Int,
     val type : String,
-    val source_id : Int,
+    val source_id : Long,
     val date : Int,
     val post_type : String,
     val text : String,
@@ -70,7 +70,7 @@ data class Online_info (
 
 data class Photo (
 
-    val id : Int,
+    val id : Long,
     val album_id : Int,
     val owner_id : Int,
     val user_id : Int,
@@ -88,7 +88,7 @@ data class Post_source (
 
 data class Profiles (
 
-    val id : Int,
+    val id : Long,
     val first_name : String,
     val last_name : String,
     val is_closed : Boolean,
@@ -124,7 +124,7 @@ data class Response (
 
 data class Sizes (
 
-    val type : String,
+    val type : Char,
     val url : String,
     val width : Int,
     val height : Int
