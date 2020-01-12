@@ -28,7 +28,7 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
     companion object {
         fun getNewInstance() = LoginFragment().apply {
             arguments = Bundle().apply {
-                //TODO put arguments here
+
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.arsoft.newsfeed.adapters
 
-import android.util.Log
 import android.view.*
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.bumptech.glide.Glide
@@ -33,8 +31,6 @@ class ViewPhotoViewPagerAdapter: RecyclerView.Adapter<ViewPhotoViewPagerAdapter.
 
 
         fun bind(photo: String) {
-
-            Log.e("PHOTO", photo)
 
             Glide.with(itemView.context)
                 .load(photo)

@@ -76,7 +76,7 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.4'
 
     //Expandable TextView
-    implementation 'tm.charlie.androidlib:expandable-textview:2.0.2'
+    implementation "com.ms-square:expandableTextView:0.1.4"
 
     //CollageView
     implementation'com.github.lopei:collageview:0.1.3'

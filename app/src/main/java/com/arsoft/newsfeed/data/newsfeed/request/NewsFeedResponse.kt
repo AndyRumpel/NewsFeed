@@ -6,7 +6,49 @@ data class NewsFeedResponse (
 
 data class Attachments (
     val type : String,
-    val photo : Photo
+    val photo : Photo?,
+    val video : Video?
+)
+
+data class Video (
+
+    val id : Int,
+    val owner_id : Int,
+    val title : String,
+    val duration : Int,
+    val description : String,
+    val date : Int,
+    val comments : Int,
+    val views : Int,
+    val width : Int,
+    val height : Int,
+    val image : List<Image>,
+    val is_favorite : Boolean,
+    val first_frame : List<First_frame>,
+    val access_access_key : String,
+    val can_add : Int,
+    val track_code : String,
+    val can_comment : Int,
+    val can_repost : Int,
+    val can_like : Int,
+    val can_add_to_faves : Int,
+    val can_subscribe : Int,
+    val type : String
+)
+
+data class Image (
+
+    val height : Int,
+    val url : String,
+    val width : Int,
+    val with_padding : Int
+)
+
+data class First_frame (
+
+    val url : String,
+    val width : Int,
+    val height : Int
 )
 
 data class Comments (
@@ -37,7 +79,7 @@ data class Items (
     val topic_id : Int,
     val type : String,
     val source_id : Long,
-    val date : Int,
+    val date : Long,
     val post_type : String,
     val text : String,
     val marked_as_ads : Int,

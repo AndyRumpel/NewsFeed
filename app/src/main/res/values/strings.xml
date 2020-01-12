@@ -8,4 +8,7 @@
     <string name="login_description">Логин / Почта / Номер телефона</string>
     <string name="password">Пароль</string>
     <string name="logout">Выйти</string>
+    <string name="seconds_ago">секунд назад</string>
+    <string name="minutes_ago">минут назад</string>
+    <string name="hours_ago">часов назад</string>
 </resources>

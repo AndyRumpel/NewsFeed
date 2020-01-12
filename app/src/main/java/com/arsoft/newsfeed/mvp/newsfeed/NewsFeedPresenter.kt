@@ -1,5 +1,6 @@
 package com.arsoft.newsfeed.mvp.newsfeed
 
+import android.annotation.SuppressLint
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.arsoft.newsfeed.data.DataProvider
@@ -9,11 +10,12 @@ import io.reactivex.schedulers.Schedulers
 @InjectViewState
 class NewsFeedPresenter: MvpPresenter<NewsFeedView>() {
 
-    private val ITEMS_COUNT = 50
+    private val ITEMS_COUNT = 100
     private val VERSION = "5.103"
     private val FILTERS = "post"
     private val newsFeedRepository = DataProvider.provideNewsFeed()
 
+    @SuppressLint("CheckResult")
     fun loadNewsFeed(accessToken: String){
         viewState.showLoading()
         newsFeedRepository.getNewsFeed(
