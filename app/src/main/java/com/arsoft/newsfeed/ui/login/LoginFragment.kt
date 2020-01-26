@@ -1,8 +1,6 @@
 package com.arsoft.newsfeed.ui.login
 
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -15,14 +13,12 @@ import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.app.NewsFeedApplication.Companion.prefs
 import com.arsoft.newsfeed.mvp.login.LoginPresenter
 import com.arsoft.newsfeed.mvp.login.LoginView
-import com.arsoft.newsfeed.ui.screens.Screens
 import kotlinx.android.synthetic.main.fragment_login.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
 class LoginFragment: MvpAppCompatFragment(), LoginView {
 
-    private val APP_PREFERENCES_ACCESS_TOKEN = "access_token"
 
     //MARK -
     companion object {
@@ -65,11 +61,9 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
             if (usernameInput.text.toString() != "" && passwordInput.text.toString() != "") {
                 presenter.login(username = usernameInput.text.toString(), password = passwordInput.text.toString())
             } else {
-                Toast.makeText(context, "Введите правильные данные", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Введите допустимые данные", Toast.LENGTH_SHORT).show()
             }
         }
-
-
     }
 
     override fun showLoading() {
@@ -86,13 +80,10 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
         loading_cpv.visibility = View.INVISIBLE
     }
 
-    override fun saveAccessToken(accessToken: String) {
-        prefs!!.accessToken = accessToken
-    }
-
     override fun showError(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         Log.e("ERROR", message)
     }
+
 
 }

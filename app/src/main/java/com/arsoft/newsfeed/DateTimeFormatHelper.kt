@@ -1,6 +1,5 @@
 package com.arsoft.newsfeed
 
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -19,25 +18,25 @@ class MyDateTimeFormatHelper {
             val simpleTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
             val simpleDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
-            val deltaTimeInSecond = deltaTime / ONE_SECOND
+            val deltaTimeInSeconds = deltaTime / ONE_SECOND
             val deltaTimeInMinutes = deltaTime / ONE_MINUTE
             val deltaTimeInHours = deltaTime / ONE_HOUR
 
-            val secondsLastNumber = deltaTimeInSecond%10
+            val secondsLastNumber = deltaTimeInSeconds%10
             val minutesLastNumber = deltaTimeInMinutes%10
             val hoursLastNumber = deltaTimeInHours%10
 
             return if (deltaTime < ONE_DAY) {
                 if (deltaTime < ONE_HOUR) {
                     if (deltaTime < ONE_MINUTE) {
-                        if (secondsLastNumber == 1L && deltaTimeInSecond != 11L) {
-                            "$deltaTimeInSecond секунду назад"
-                        } else if ((secondsLastNumber == 2L && deltaTimeInSecond != 12L) ||
-                            (secondsLastNumber == 3L && deltaTimeInSecond != 13L)||
-                            (secondsLastNumber == 4L && deltaTimeInSecond != 14L))  {
-                            "$deltaTimeInSecond секунды назад"
+                        if (secondsLastNumber == 1L && deltaTimeInSeconds != 11L) {
+                            "$deltaTimeInSeconds секунду назад"
+                        } else if ((secondsLastNumber == 2L && deltaTimeInSeconds != 12L) ||
+                            (secondsLastNumber == 3L && deltaTimeInSeconds != 13L)||
+                            (secondsLastNumber == 4L && deltaTimeInSeconds != 14L))  {
+                            "$deltaTimeInSeconds секунды назад"
                         } else {
-                            "$deltaTimeInSecond секунд назад"
+                            "$deltaTimeInSeconds секунд назад"
                         }
 
                     } else if (minutesLastNumber == 1L && deltaTimeInMinutes != 11L) {

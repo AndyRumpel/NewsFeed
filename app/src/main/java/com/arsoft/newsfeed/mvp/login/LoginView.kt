@@ -8,6 +8,5 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 interface LoginView: MvpView {
     fun showLoading()
     fun hideLoading()
-    fun saveAccessToken(accessToken: String)
     fun showError(message: String)
 }

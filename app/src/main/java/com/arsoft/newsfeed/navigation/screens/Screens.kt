@@ -1,4 +1,4 @@
-package com.arsoft.newsfeed.ui.screens
+package com.arsoft.newsfeed.navigation.screens
 
 import androidx.fragment.app.Fragment
 import com.arsoft.newsfeed.ui.login.LoginFragment
@@ -6,7 +6,6 @@ import com.arsoft.newsfeed.ui.newsfeed.NewsFeedFragment
 import com.arsoft.newsfeed.ui.photo.ViewPhotoFragment
 import com.arsoft.newsfeed.ui.video.VideoPlayerFragment
 import ru.terrakok.cicerone.android.support.SupportAppScreen
-import java.text.ParsePosition
 
 class Screens {
     class LoginScreen: SupportAppScreen() {

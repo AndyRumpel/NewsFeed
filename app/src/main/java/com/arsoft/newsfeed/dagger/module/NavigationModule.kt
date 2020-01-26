@@ -9,7 +9,8 @@ import javax.inject.Singleton
 
 @Module
 class NavigationModule {
-    private var cicerone: Cicerone<Router>  = Cicerone.create()
+    private var cicerone: Cicerone<Router> = Cicerone.create()
+
 
     @Provides
     @Singleton

@@ -6,11 +6,11 @@ data class VideoPlayerResponse(
 
 data class Files (
 
-    val mp4_240 : String,
-    val mp4_360 : String,
-    val mp4_480 : String,
-    val mp4_720 : String,
-    val hls : String
+    val mp4_240 : String?,
+    val mp4_360 : String?,
+    val mp4_480 : String?,
+    val mp4_720 : String?,
+    val hls : String?
 )
 
 data class First_frame (

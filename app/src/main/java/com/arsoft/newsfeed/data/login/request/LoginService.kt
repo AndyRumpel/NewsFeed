@@ -1,32 +1,36 @@
 package com.arsoft.newsfeed.data.login.request
 
-import android.text.LoginFilter
-import io.reactivex.Single
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Deferred
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.util.*
 
 interface LoginService {
 
     @GET(value = "token")
     fun login(
-        @Query("grant_type") grantType: String,
-        @Query("client_id") clientId: Long,
-        @Query("client_secret") clientSecret: String,
-        @Query("username") username: String,
-        @Query("password") password: String,
-        @Query("scope") scope: String
-    ): Single<LoginResponse>
+        @Query(value = "grant_type") grantType: String,
+        @Query(value = "client_id") clientId: Long,
+        @Query(value = "client_secret") clientSecret: String,
+        @Query(value = "username") username: String,
+        @Query(value = "password") password: String,
+        @Query(value = "scope") scope: String
+    ): Deferred<LoginResponse>
 
     companion object Factory {
         fun create(): LoginService {
+            val okHttpClient = OkHttpClient().newBuilder()
+                .protocols(mutableListOf(Protocol.HTTP_1_1))
+                .build()
             val retrofit = Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://oauth.vk.com/")
+                .client(okHttpClient)
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
             return retrofit.create(LoginService::class.java)

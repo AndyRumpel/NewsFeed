@@ -1,8 +1,10 @@
 package com.arsoft.newsfeed.data.video.request
 
-import io.reactivex.Single
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Deferred
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,15 +17,19 @@ interface VideoPlayerService {
         @Query(value = "videos")videoID: String,
         @Query(value = "access_token")accessToken: String,
         @Query(value = "v")version: String
-    ): Single<VideoPlayerResponse>
+    ): Deferred<VideoPlayerResponse>
 
 
     companion object Factory {
         fun create(): VideoPlayerService {
+            val okHttpClient = OkHttpClient().newBuilder()
+                .protocols(mutableListOf(Protocol.HTTP_1_1))
+                .build()
             val retrofit = Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.vk.com/method/")
+                .client(okHttpClient)
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
             return retrofit.create(VideoPlayerService::class.java)

@@ -3,22 +3,22 @@ package com.arsoft.newsfeed.ui.newsfeed
 import android.os.Bundle
 import android.view.*
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedResponse
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
-import com.arsoft.newsfeed.ui.screens.Screens
+import com.arsoft.newsfeed.navigation.screens.Screens
 import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
+class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAdapter.OnItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsFeedRecyclerAdapter
@@ -54,7 +54,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
             presenter.loadNewsFeed(arguments?.getString("access_token")!!)
         }
 
-        adapter = NewsFeedRecyclerAdapter()
+        adapter = NewsFeedRecyclerAdapter(onItemClickListener = this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
@@ -79,8 +79,8 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
 
     //MARK - View implementation
 
-    override fun loadNewsFeed(model: NewsFeedResponse) {
-        adapter.setupNewsFeedList(model)
+    override fun loadNewsFeed(items: ArrayList<FeedItemModel>) {
+        adapter.setupNewsFeedList(items = items)
         adapter.notifyDataSetChanged()
     }
 
@@ -98,5 +98,14 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView {
     }
 
     override fun showError(message: String) {
+    }
+
+    // OnItemClickListener implementation
+    override fun onPhotoClick(photoURLs: ArrayList<String>, position: Int) {
+        router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
+    }
+
+    override fun onVideoClick(videoID: String, videoOwnerID: String) {
+        router.navigateTo(Screens.VideoPlayerScreen(videoID = videoID, videoOwnerID = videoOwnerID))
     }
 }
