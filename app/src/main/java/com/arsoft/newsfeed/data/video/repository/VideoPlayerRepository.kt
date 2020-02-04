@@ -1,7 +1,6 @@
 package com.arsoft.newsfeed.data.video.repository
 
 import android.util.Log
-import com.arsoft.newsfeed.data.video.request.VideoPlayerResponse
 import com.arsoft.newsfeed.data.video.request.VideoPlayerService
 
 class VideoPlayerRepository(private val apiService: VideoPlayerService) {

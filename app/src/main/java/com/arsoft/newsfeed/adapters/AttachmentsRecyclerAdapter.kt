@@ -14,19 +14,13 @@ import com.bumptech.glide.Glide
 
 class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val attachments = ArrayList<IAttachment>()
+    private val mAttachments = ArrayList<IAttachment>()
 
     fun setupAttachments(attachments: ArrayList<IAttachment>) {
-//        attachments.clear()
-//        attachments.addAll(attachments)
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
-        attachments.add(PhotoModel("https://sun9-45.userapi.com/c857232/v857232248/cf03b/1MUvtMshWAg.jpg"))
+        mAttachments.clear()
+        mAttachments.addAll(attachments)
 
-
+        Log.e("PHOTOS", mAttachments.toString())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -38,11 +32,11 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
     }
 
     override fun getItemCount(): Int {
-        return attachments.count()
+        return mAttachments.count()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when(attachments[position]) {
+        return when(mAttachments[position]) {
             is PhotoModel -> {
                 AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal
             }
@@ -57,11 +51,11 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
         when(getItemViewType(position)) {
             AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> {
                 val attachmentPhotoViewHolder = holder as AttachmentPhotoViewHolder
-                attachmentPhotoViewHolder.bind(attachments[position] as PhotoModel)
+                attachmentPhotoViewHolder.bind(mAttachments[position] as PhotoModel)
             }
             AttachmentTypes.ATTACHMENT_TYPE_VIDEO.ordinal -> {
                 val attachmentVideoViewHolder = holder as AttachmentVideoViewHolder
-                attachmentVideoViewHolder.bind(attachments[position] as VideoModel)
+                attachmentVideoViewHolder.bind(mAttachments[position] as VideoModel)
             }
             else -> {}
         }

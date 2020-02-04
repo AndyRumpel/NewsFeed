@@ -4,6 +4,8 @@ import android.app.Application
 import com.arsoft.newsfeed.Prefs
 import com.arsoft.newsfeed.dagger.AppComponent
 import com.arsoft.newsfeed.dagger.DaggerAppComponent
+import com.arsoft.newsfeed.dagger.module.NavigationModule
+import com.arsoft.newsfeed.dagger.module.NewsFeedRequestModule
 
 val prefs: Prefs by lazy {
     NewsFeedApplication.prefs!!
@@ -26,7 +28,10 @@ class NewsFeedApplication: Application() {
 
     fun getAppComponent(): AppComponent? {
         if (appComponent == null)
-            appComponent = DaggerAppComponent.builder().build()
+            appComponent = DaggerAppComponent.builder()
+                .navigationModule(NavigationModule())
+                .newsFeedRequestModule(NewsFeedRequestModule())
+                .build()
         return appComponent
     }
 

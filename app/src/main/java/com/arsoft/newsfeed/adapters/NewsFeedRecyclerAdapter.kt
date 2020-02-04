@@ -36,7 +36,7 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
         newsFeedList.addAll(items)
     }
 
-    class NewsFeedViewHolder(itemView: View, private val onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){
+    class NewsFeedViewHolder(itemView: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){
 
 
         private val avatarImg= itemView.findViewById<ImageView>(R.id.post_avatar)
@@ -53,7 +53,44 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
 
         fun bind(model: FeedItemModel) {
 
+            layoutMaganer.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    when (model.attachments.count()) {
+                        1 -> return 4
+                        2 -> return 2
+                        3 -> return when (position) {
+                                0 -> 4
+                                else -> 2
+                        }
+                        4 -> return 1
+                        5 -> return when (position) {
+                                0 -> 1
+                                else -> 1
+                        }
+                        6 -> return when(position) {
+                                0, 1 -> 2
+                                else -> 1
+                        }
+                        7 -> return when (position) {
+                                0 -> 4
+                                1, 2 -> 2
+                                else -> 1
+                        }
+                        8 -> return 1
+                        9 -> return when(position) {
+                                0 -> 4
+                                else -> 1
+                        }
+                        10 -> return when(position) {
+                                0, 1 -> 2
+                                else -> 1
+                        }
+                        else -> return 1
+                    }
 
+                }
+
+            }
 
             attachmentsRecyclerView.isNestedScrollingEnabled = false
             attachmentsRecyclerView.adapter = adapter

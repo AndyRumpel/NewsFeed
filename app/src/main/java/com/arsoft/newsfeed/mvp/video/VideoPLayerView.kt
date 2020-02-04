@@ -7,7 +7,7 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 @StateStrategyType(value = AddToEndSingleStrategy::class)
 interface VideoPLayerView: MvpView {
 
-    fun initializePlayer(videoURL: String)
+    fun initializePlayer(videoURL: String, platform: String?)
     fun playVideo()
     fun chooseQuality(qualities: ArrayList<String>)
     fun showLoading()

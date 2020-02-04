@@ -10,7 +10,6 @@ import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.models.FeedItemModel
-import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedResponse
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens

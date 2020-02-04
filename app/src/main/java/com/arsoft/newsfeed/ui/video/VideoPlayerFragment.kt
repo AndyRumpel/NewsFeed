@@ -1,5 +1,6 @@
 package com.arsoft.newsfeed.ui.video
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -43,9 +44,8 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
         presenter.loadPLayer(
             ownerID = arguments!!.getString("video_owner_id")!!,
             videoID = arguments!!.getString("video_id")!!,
-            accessToken = Prefs(context!!).accessToken
-        )
-
+            accessToken = Prefs(context!!).accessToken,
+            platform = arguments!!.getString("video_platform"))
     }
 
     override fun onStop() {
@@ -59,8 +59,13 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
 
     //View implementation
 
-    override fun initializePlayer(videoURL: String) {
-        video_view.setVideoURI(Uri.parse(videoURL))
+    override fun initializePlayer(videoURL: String, platform: String?) {
+        if (platform == "youtube") {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoURL))
+            startActivity(intent)
+        } else {
+            video_view.setVideoURI(Uri.parse(videoURL))
+        }
     }
 
     override fun playVideo() {

@@ -13,7 +13,7 @@ class VideoPlayerPresenter: MvpPresenter<VideoPLayerView>() {
     private val videoLoadingJob: Job? = null
 
 
-    fun loadPLayer(ownerID: String, videoID: String, accessToken: String){
+    fun loadPLayer(ownerID: String, videoID: String, accessToken: String, platform: String?){
         viewState.showLoading()
 
         GlobalScope.launch {
@@ -21,7 +21,7 @@ class VideoPlayerPresenter: MvpPresenter<VideoPLayerView>() {
             withContext(Dispatchers.Main) {
                 try {
                     viewState.hideLoading()
-                    viewState.initializePlayer(videoURL)
+                    viewState.initializePlayer(videoURL = videoURL, platform = platform)
                     viewState.playVideo()
                 } catch (e: Throwable) {
                     viewState.showError(e.message.toString())
@@ -29,6 +29,7 @@ class VideoPlayerPresenter: MvpPresenter<VideoPLayerView>() {
             }
         }
     }
+
 
     override fun onDestroy() {
         videoLoadingJob?.cancel()

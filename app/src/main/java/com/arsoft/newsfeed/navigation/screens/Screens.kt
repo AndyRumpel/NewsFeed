@@ -26,7 +26,10 @@ class Screens {
         }
     }
 
-    class VideoPlayerScreen(private val videoID: String, private val videoOwnerID: String): SupportAppScreen() {
+    class VideoPlayerScreen(
+        private val videoID: String,
+        private val videoOwnerID: String
+    ): SupportAppScreen() {
         override fun getFragment(): Fragment {
             return VideoPlayerFragment.getNewInstance(videoID = videoID, videoOwnerID = videoOwnerID)
         }

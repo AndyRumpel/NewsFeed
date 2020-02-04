@@ -17,6 +17,5 @@ interface AppComponent {
     fun inject(activity: MainActivity)
     fun inject(fragment: LoginFragment)
     fun inject(fragment: NewsFeedFragment)
-    fun inject(viewHolder: NewsFeedRecyclerAdapter.NewsFeedViewHolder)
     fun inject(presenter: NewsFeedPresenter)
 }
