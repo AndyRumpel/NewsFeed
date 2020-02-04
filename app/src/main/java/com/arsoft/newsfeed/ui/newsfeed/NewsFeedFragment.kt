@@ -77,7 +77,10 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
         return super.onOptionsItemSelected(item)
     }
 
-    //MARK - View implementation
+    override fun onResume() {
+        super.onResume()
+        adapter.notifyDataSetChanged()
+    }
 
     override fun loadNewsFeed(items: ArrayList<FeedItemModel>) {
         adapter.setupNewsFeedList(items = items)

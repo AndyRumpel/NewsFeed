@@ -15,9 +15,9 @@ class DataProvider {
             )
         }
 
-        fun provideNewsFeed(): NewsFeedRepository{
+        fun provideNewsFeed(apiService: NewsFeedService): NewsFeedRepository{
             return NewsFeedRepository(
-                NewsFeedService.create()
+                apiService
             )
         }
 

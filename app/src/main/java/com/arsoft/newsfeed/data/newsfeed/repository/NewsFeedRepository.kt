@@ -2,14 +2,14 @@ package com.arsoft.newsfeed.data.newsfeed.repository
 
 import android.util.Log
 import com.arsoft.newsfeed.MyDateTimeFormatHelper
-import com.arsoft.newsfeed.data.models.FeedItemModel
-import com.arsoft.newsfeed.data.models.SourceModel
-import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedService
+import com.arsoft.newsfeed.data.models.*
+import com.arsoft.newsfeed.data.newsfeed.request.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class NewsFeedRepository(val apiService: NewsFeedService) {
+
 
     private val ITEMS_COUNT = 100
     private val VERSION = "5.103"
@@ -33,16 +33,14 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
         ).await()
 
 
-        var photoURLs: ArrayList<String>?
+        var photoURLs: String?
         var videoPreviewImage: String?
         var videoDuration: Int?
         var videoID: String?
         var videoOwnerID: String?
-        var avatar: String
-        var name: String
-        var postText: String
         var videoPreviewImageWidth: Int
         val currentTime = Calendar.getInstance().timeInMillis
+        var attachments: ArrayList<IAttachment>
 
         for (item in result.response.profiles) {
             sourceProfiles.add(
@@ -70,18 +68,20 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                         videoID = null
                         videoOwnerID = null
                         videoPreviewImageWidth = 0
-                        photoURLs = ArrayList()
+                        photoURLs = null
+                        attachments = ArrayList()
                         for (attachment in item.attachments) {
                             if (attachment.type == ATTACHMENTS_TYPE_PHOTO) {
-                                for (size in attachment.photo!!.sizes) {
+                                for (size in attachment.photo.sizes) {
                                     if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
-                                        photoURLs.add(size.url)
+                                        photoURLs = size.url
                                     }
                                 }
+                                attachments.add(PhotoModel(photoURLs!!))
                             }
                             if (attachment.type == ATTACHMENTS_TYPE_VIDEO) {
 
-                                attachment.video!!.image.forEach {
+                                attachment.video.image.forEach {
                                     if (it.width in (videoPreviewImageWidth + 1)..999) {
                                         videoPreviewImageWidth = it.width
                                     }
@@ -101,6 +101,13 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
 //                                       Log.e("VIDEO_DURATION", videoDuration.toString())
 
                                     }
+                                    attachments.add(VideoModel(
+                                        videoPreviewImage = videoPreviewImage,
+                                        videoDuration = videoDuration,
+                                        videoID = videoID,
+                                        videoOwnerID = videoOwnerID
+                                    ))
+
                                 }
                             }
                         }
@@ -110,16 +117,13 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                                 avatar = source.avatar,
                                 sourceName = source.name,
                                 postText = item.text,
-                                photoURLs = photoURLs,
-                                videoPreviewImage = videoPreviewImage,
-                                videoDuration = videoDuration,
-                                videoID = videoID,
-                                videoOwnerID = videoOwnerID,
+                                attachments = attachments,
                                 date = MyDateTimeFormatHelper.timeFormat(item.date * 1000, currentTime)))
 //                        Log.e("image_preview_width", videoPreviewImageWidth.toString())
 //                        Log.e("image_preview", videoPreviewImage.toString())
 //                        Log.e("VIDEO_DURATION", videoDuration.toString())
-                        Log.e("NAME", source.name)
+//                        Log.e("NAME", source.name)
+
                     }
                 }
             }

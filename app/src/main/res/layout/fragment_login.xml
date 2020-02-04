@@ -12,13 +12,12 @@
         android:id="@+id/vk_logo"
         android:layout_width="@dimen/logo_size"
         android:layout_height="@dimen/logo_size"
-        app:srcCompat="@drawable/vk_logo"
-        app:layout_constraintBottom_toTopOf="@+id/usernameInput"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.852" />
+        app:srcCompat="@drawable/vk_logo" />
 
     <EditText
         android:id="@+id/passwordInput"
@@ -26,19 +25,18 @@
         android:layout_height="@dimen/textinput_size"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginBottom="32dp"
-        android:textColor="@color/colorAccent"
-        android:textColorHint="@color/colorAccent"
+        android:background="@drawable/textinput_bg"
         android:hint="@string/password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/loginButton"
+        android:padding="@dimen/textinput_padding_size"
+        android:textColor="@color/colorAccent"
+        android:textColorHint="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/textinput_bg"
-        android:padding="@dimen/textinput_padding_size"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/usernameInput" />
 
 
     <EditText
@@ -47,20 +45,19 @@
         android:layout_height="@dimen/textinput_size"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginBottom="16dp"
+        android:background="@drawable/textinput_bg"
         android:ems="10"
         android:hint="@string/login_description"
+        android:inputType="textPersonName"
+        android:padding="@dimen/textinput_padding_size"
         android:textColor="@color/colorAccent"
         android:textColorHint="@color/colorAccent"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/passwordInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/textinput_bg"
-        android:padding="@dimen/textinput_padding_size"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/vk_logo" />
 
     <Button
         android:id="@+id/loginButton"
@@ -68,17 +65,17 @@
         android:layout_height="0dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginBottom="300dp"
         android:background="@drawable/button_bg"
-        android:textSize="18sp"
         android:text="@string/login"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordInput" />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/loading_cpv"

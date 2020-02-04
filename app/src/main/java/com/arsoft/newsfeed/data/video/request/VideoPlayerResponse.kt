@@ -41,7 +41,7 @@ data class Items (
     val width : Int,
     val height : Int,
     val image : List<Image>,
-    val is_favorite : Boolean,
+    val is_favorite : Int,
     val first_frame : List<First_frame>,
     val files : Files,
     val timeline_thumbs : Timeline_thumbs,

@@ -1,13 +1,27 @@
 package com.arsoft.newsfeed.data.newsfeed.request
 
+
+
 data class NewsFeedResponse (
     val response: Response
 )
 
-data class Attachments (
-    val type : String,
-    val photo : Photo?,
-    val video : Video?
+//data class AttachmentPhoto (
+//    val type : String,
+//    val photo: Photo
+//): IAttachment
+//
+//data class AttachmentVideo (
+//    val type : String,
+//    val video: Video
+//): IAttachment
+//
+//interface IAttachment
+
+data class Attachment(
+    val type: String,
+    val photo: Photo,
+    val video: Video
 )
 
 data class Video (
@@ -23,7 +37,7 @@ data class Video (
     val width : Int,
     val height : Int,
     val image : List<Image>,
-    val is_favorite : Boolean,
+    val is_favorite : Int,
     val first_frame : List<First_frame>,
     val access_access_key : String,
     val can_add : Int,
@@ -83,7 +97,7 @@ data class Items (
     val post_type : String,
     val text : String,
     val marked_as_ads : Int,
-    val attachments : List<Attachments>,
+    var attachments : List<Attachment>,
     val post_source : Post_source,
     val comments : Comments,
     val likes : Likes,
