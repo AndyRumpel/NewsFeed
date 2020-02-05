@@ -20,7 +20,7 @@ class Screens {
         }
     }
 
-    class ViewPhotoScreen(private val photoURLs: ArrayList<String>, private val position: Int): SupportAppScreen() {
+    class ViewPhotoScreen(private val photoURLs: ArrayList<String?>, private val position: Int): SupportAppScreen() {
         override fun getFragment(): Fragment {
             return ViewPhotoFragment.getNewInstance(photoURLs = photoURLs, position =  position)
         }

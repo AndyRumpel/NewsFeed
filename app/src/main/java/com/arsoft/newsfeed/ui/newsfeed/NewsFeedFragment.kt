@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
+import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.models.FeedItemModel
+import com.arsoft.newsfeed.data.models.PhotoModel
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens
@@ -17,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAdapter.OnItemClickListener {
+class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecyclerAdapter.OnAttachmentClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsFeedRecyclerAdapter
@@ -53,7 +55,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
             presenter.loadNewsFeed(arguments?.getString("access_token")!!)
         }
 
-        adapter = NewsFeedRecyclerAdapter(onItemClickListener = this)
+        adapter = NewsFeedRecyclerAdapter(onAttachmentClickListener = this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
@@ -103,7 +105,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
     }
 
     // OnItemClickListener implementation
-    override fun onPhotoClick(photoURLs: ArrayList<String>, position: Int) {
+    override fun onPhotoClick(photoURLs: ArrayList<String?>, position: Int) {
         router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
     }
 

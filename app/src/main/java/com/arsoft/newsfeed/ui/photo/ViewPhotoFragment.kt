@@ -14,7 +14,7 @@ class ViewPhotoFragment: MvpAppCompatFragment() {
     private lateinit var adapter: ViewPhotoViewPagerAdapter
 
     companion object{
-        fun getNewInstance(photoURLs: ArrayList<String>, position: Int) = ViewPhotoFragment().apply {
+        fun getNewInstance(photoURLs: ArrayList<String?>, position: Int) = ViewPhotoFragment().apply {
             arguments = Bundle().apply {
                 putStringArrayList("photo_urls", photoURLs)
                 putInt("position", position)

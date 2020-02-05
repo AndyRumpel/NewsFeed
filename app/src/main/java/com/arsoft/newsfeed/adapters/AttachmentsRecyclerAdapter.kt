@@ -10,30 +10,38 @@ import com.arsoft.newsfeed.data.models.IAttachment
 import com.arsoft.newsfeed.data.models.PhotoModel
 import com.arsoft.newsfeed.data.models.VideoModel
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.RequestOptions.bitmapTransform
+import jp.wasabeef.glide.transformations.BlurTransformation
+import jp.wasabeef.glide.transformations.CropSquareTransformation
+import jp.wasabeef.glide.transformations.CropTransformation
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
-class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val mAttachments = ArrayList<IAttachment>()
+    val attachments = ArrayList<IAttachment>()
 
     fun setupAttachments(attachments: ArrayList<IAttachment>) {
-        mAttachments.clear()
-        mAttachments.addAll(attachments)
+        this.attachments.clear()
+        this.attachments.addAll(attachments)
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> AttachmentPhotoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_photo, parent, false))
+            AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> AttachmentPhotoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_photo, parent, false), onAttachmentClickListener)
             else ->                                          AttachmentVideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_video, parent, false))
 
         }
     }
 
     override fun getItemCount(): Int {
-        return mAttachments.count()
+        return attachments.count()
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when(mAttachments[position]) {
+        return when(attachments[position]) {
             is PhotoModel -> {
                 AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal
             }
@@ -48,25 +56,36 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
         when(getItemViewType(position)) {
             AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> {
                 val attachmentPhotoViewHolder = holder as AttachmentPhotoViewHolder
-                attachmentPhotoViewHolder.bind(mAttachments[position] as PhotoModel)
+                attachmentPhotoViewHolder.bind(model = attachments[position] as PhotoModel, attachments = attachments, position = position)
             }
             AttachmentTypes.ATTACHMENT_TYPE_VIDEO.ordinal -> {
                 val attachmentVideoViewHolder = holder as AttachmentVideoViewHolder
-                attachmentVideoViewHolder.bind(mAttachments[position] as VideoModel)
+                attachmentVideoViewHolder.bind(attachments[position] as VideoModel)
             }
             else -> {}
         }
     }
 
-    class AttachmentPhotoViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-
+    class AttachmentPhotoViewHolder(itemView: View, val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.ViewHolder(itemView) {
         private val photoImageView = itemView.findViewById<ImageView>(R.id.attachment_photo_image_view)
 
-        fun bind(model: PhotoModel) {
+        fun bind(model: PhotoModel, attachments: ArrayList<IAttachment>, position: Int) {
+
 
             Glide.with(itemView.context)
                 .load(model.photoURL)
+                .apply(bitmapTransform(CropSquareTransformation()))
                 .into(photoImageView)
+
+            photoImageView.setOnClickListener {
+                val photos = ArrayList<String?>()
+                for (attachment in attachments) {
+                    if (attachment is PhotoModel) {
+                        photos.add(attachment.photoURL)
+                    }
+                }
+                onAttachmentClickListener.onPhotoClick(photos, position)
+            }
         }
     }
     class AttachmentVideoViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -79,6 +98,11 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
     enum class AttachmentTypes {
         ATTACHMENT_TYPE_PHOTO,
         ATTACHMENT_TYPE_VIDEO
+    }
+
+    interface OnAttachmentClickListener{
+        fun onPhotoClick(photoURLs: ArrayList<String?> ,position: Int)
+        fun onVideoClick(videoID: String, videoOwnerID: String)
     }
 
 }

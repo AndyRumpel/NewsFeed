@@ -13,13 +13,13 @@ import com.ms.square.android.expandabletextview.ExpandableTextView
 import kotlin.collections.ArrayList
 
 
-class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NewsFeedRecyclerAdapter(private val onAttachmentClickListener: AttachmentsRecyclerAdapter.OnAttachmentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val newsFeedList: ArrayList<FeedItemModel> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.feed_item, parent, false)
-        return NewsFeedViewHolder(itemView, onItemClickListener)
+        return NewsFeedViewHolder(itemView, onAttachmentClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -35,7 +35,7 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
         newsFeedList.addAll(items)
     }
 
-    class NewsFeedViewHolder(itemView: View, onItemClickListener: OnItemClickListener) : RecyclerView.ViewHolder(itemView){
+    class NewsFeedViewHolder(itemView: View, onAttachmentClickListener: AttachmentsRecyclerAdapter.OnAttachmentClickListener) : RecyclerView.ViewHolder(itemView){
 
 
         private val avatarImg= itemView.findViewById<ImageView>(R.id.post_avatar)
@@ -43,10 +43,8 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
         private val postTextTxt = itemView.findViewById<ExpandableTextView>(R.id.post_expandable_text_view)
         private val attachmentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.attachments_recycler_view)
         private val dateTextView = itemView.findViewById<TextView>(R.id.post_date_time)
-//        private val videoPreviewImage = itemView.findViewById<ImageView>(R.id.video_preview_image)
-//        private val videoPreviewDurationTextView = itemView.findViewById<TextView>(R.id.video_duration_text_view)
 
-        private val adapter = AttachmentsRecyclerAdapter()
+        private val adapter = AttachmentsRecyclerAdapter(onAttachmentClickListener)
         private lateinit var layoutManager: MultipleSpanGridLayoutManager
 
 
@@ -60,7 +58,6 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
             adapter.setupAttachments(attachments = model.attachments)
             adapter.notifyDataSetChanged()
 
-//            Log.e("ATTACHMENTS", model.attachments.toString())
 
 
             if (model.avatar.isNotEmpty()) {
@@ -106,8 +103,5 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
         }
     }
 
-    interface OnItemClickListener{
-        fun onPhotoClick(photoURLs: ArrayList<String> ,position: Int)
-        fun onVideoClick(videoID: String, videoOwnerID: String)
-    }
+
 }
