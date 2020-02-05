@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.FeedItemModel
@@ -48,54 +47,17 @@ class NewsFeedRecyclerAdapter(private val onItemClickListener: OnItemClickListen
 //        private val videoPreviewDurationTextView = itemView.findViewById<TextView>(R.id.video_duration_text_view)
 
         private val adapter = AttachmentsRecyclerAdapter()
-        private val layoutMaganer = GridLayoutManager(itemView.context, 4)
+        private lateinit var layoutManager: MultipleSpanGridLayoutManager
 
 
         fun bind(model: FeedItemModel) {
 
-            layoutMaganer.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    when (model.attachments.count()) {
-                        1 -> return 4
-                        2 -> return 2
-                        3 -> return when (position) {
-                                0 -> 4
-                                else -> 2
-                        }
-                        4 -> return 1
-                        5 -> return when (position) {
-                                0 -> 1
-                                else -> 1
-                        }
-                        6 -> return when(position) {
-                                0, 1 -> 2
-                                else -> 1
-                        }
-                        7 -> return when (position) {
-                                0 -> 4
-                                1, 2 -> 2
-                                else -> 1
-                        }
-                        8 -> return 1
-                        9 -> return when(position) {
-                                0 -> 4
-                                else -> 1
-                        }
-                        10 -> return when(position) {
-                                0, 1 -> 2
-                                else -> 1
-                        }
-                        else -> return 1
-                    }
 
-                }
-
-            }
-
+            layoutManager = MultipleSpanGridLayoutManager(context = itemView.context, spanCount = 4, spanList = model.attachments)
             attachmentsRecyclerView.isNestedScrollingEnabled = false
+            attachmentsRecyclerView.layoutManager = layoutManager
             attachmentsRecyclerView.adapter = adapter
-            attachmentsRecyclerView.layoutManager = layoutMaganer
-            adapter.setupAttachments(attachments = model.attachments!!)
+            adapter.setupAttachments(attachments = model.attachments)
             adapter.notifyDataSetChanged()
 
 //            Log.e("ATTACHMENTS", model.attachments.toString())

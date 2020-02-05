@@ -1,6 +1,5 @@
 package com.arsoft.newsfeed.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +18,6 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
     fun setupAttachments(attachments: ArrayList<IAttachment>) {
         mAttachments.clear()
         mAttachments.addAll(attachments)
-
-        Log.e("PHOTOS", mAttachments.toString())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -67,7 +64,6 @@ class AttachmentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>(
 
         fun bind(model: PhotoModel) {
 
-            Log.e("PHOTOS", model.photoURL!!)
             Glide.with(itemView.context)
                 .load(model.photoURL)
                 .into(photoImageView)

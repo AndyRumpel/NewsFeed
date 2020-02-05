@@ -41,6 +41,7 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
         var videoPreviewImageWidth: Int
         val currentTime = Calendar.getInstance().timeInMillis
         var attachments: ArrayList<IAttachment>
+        var postText: String
 
         for (item in result.response.profiles) {
             sourceProfiles.add(
@@ -69,7 +70,13 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                         videoOwnerID = null
                         videoPreviewImageWidth = 0
                         photoURLs = null
+                        postText = ""
                         attachments = ArrayList()
+
+                        if (item.text != "") {
+                            postText = item.text
+                        }
+
                         for (attachment in item.attachments) {
                             if (attachment.type == ATTACHMENTS_TYPE_PHOTO) {
                                 for (size in attachment.photo.sizes) {
@@ -116,13 +123,13 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                             FeedItemModel(
                                 avatar = source.avatar,
                                 sourceName = source.name,
-                                postText = item.text,
+                                postText = postText,
                                 attachments = attachments,
                                 date = MyDateTimeFormatHelper.timeFormat(item.date * 1000, currentTime)))
 //                        Log.e("image_preview_width", videoPreviewImageWidth.toString())
 //                        Log.e("image_preview", videoPreviewImage.toString())
 //                        Log.e("VIDEO_DURATION", videoDuration.toString())
-//                        Log.e("NAME", source.name)
+//                        Log.e("POST_TEXT", source.name + "\n" + postText + "\n \n \n ------------------- \n \n \n")
 
                     }
                 }
