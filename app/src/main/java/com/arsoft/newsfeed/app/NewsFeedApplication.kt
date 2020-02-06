@@ -1,7 +1,7 @@
 package com.arsoft.newsfeed.app
 
 import android.app.Application
-import com.arsoft.newsfeed.Prefs
+import com.arsoft.newsfeed.helpers.Prefs
 import com.arsoft.newsfeed.dagger.AppComponent
 import com.arsoft.newsfeed.dagger.DaggerAppComponent
 import com.arsoft.newsfeed.dagger.module.NavigationModule

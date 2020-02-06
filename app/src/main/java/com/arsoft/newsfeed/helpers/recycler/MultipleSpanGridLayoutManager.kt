@@ -1,14 +1,14 @@
-package com.arsoft.newsfeed.adapters
+package com.arsoft.newsfeed.helpers.recycler
 
 import android.content.Context
 import androidx.recyclerview.widget.GridLayoutManager
 import com.arsoft.newsfeed.data.models.IAttachment
 
-class MultipleSpanGridLayoutManager(context: Context, spanCount: Int, spanList: ArrayList<IAttachment>): GridLayoutManager(context, spanCount) {
+class MultipleSpanGridLayoutManager(context: Context, spanCount: Int, items: ArrayList<IAttachment>): GridLayoutManager(context, spanCount) {
     init {
         spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                when (spanList.count()) {
+                when (items.count()) {
                     1 -> return 4
                     2 -> return 2
                     3 -> return when (position) {

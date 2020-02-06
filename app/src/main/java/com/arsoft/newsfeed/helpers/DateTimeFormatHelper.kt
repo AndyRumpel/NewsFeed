@@ -1,4 +1,4 @@
-package com.arsoft.newsfeed
+package com.arsoft.newsfeed.helpers
 
 import java.text.SimpleDateFormat
 import java.util.*

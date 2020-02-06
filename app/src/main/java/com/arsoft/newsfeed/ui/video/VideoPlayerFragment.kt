@@ -10,7 +10,7 @@ import android.widget.MediaController
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arsoft.newsfeed.Prefs
+import com.arsoft.newsfeed.helpers.Prefs
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.mvp.video.VideoPLayerView
 import com.arsoft.newsfeed.mvp.video.VideoPlayerPresenter

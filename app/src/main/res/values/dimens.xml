@@ -8,4 +8,5 @@
     <dimen name="cpv_size">56dp</dimen>
     <dimen name="post_avatar_size">56dp</dimen>
     <dimen name="margin_all">2dp</dimen>
+    <dimen name="attachments_photo_corner_radius">5dp</dimen>
 </resources>

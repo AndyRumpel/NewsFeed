@@ -12,6 +12,7 @@ import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.data.models.PhotoModel
+import com.arsoft.newsfeed.helpers.recycler.NewsFeedItemDecoration
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens
@@ -57,6 +58,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecycle
 
         adapter = NewsFeedRecyclerAdapter(onAttachmentClickListener = this)
         recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(NewsFeedItemDecoration(20))
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
     }

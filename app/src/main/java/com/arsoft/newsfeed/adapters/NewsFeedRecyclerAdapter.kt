@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.FeedItemModel
+import com.arsoft.newsfeed.helpers.recycler.AttachmentsItemDecoration
+import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
 import com.bumptech.glide.Glide
 import com.ms.square.android.expandabletextview.ExpandableTextView
 import kotlin.collections.ArrayList
@@ -51,10 +53,16 @@ class NewsFeedRecyclerAdapter(private val onAttachmentClickListener: Attachments
         fun bind(model: FeedItemModel) {
 
 
-            layoutManager = MultipleSpanGridLayoutManager(context = itemView.context, spanCount = 4, spanList = model.attachments)
+            layoutManager =
+                MultipleSpanGridLayoutManager(
+                    context = itemView.context,
+                    spanCount = 4,
+                    items = model.attachments
+                )
             attachmentsRecyclerView.isNestedScrollingEnabled = false
             attachmentsRecyclerView.layoutManager = layoutManager
             attachmentsRecyclerView.adapter = adapter
+            attachmentsRecyclerView.setHasFixedSize(true)
             adapter.setupAttachments(attachments = model.attachments)
             adapter.notifyDataSetChanged()
 

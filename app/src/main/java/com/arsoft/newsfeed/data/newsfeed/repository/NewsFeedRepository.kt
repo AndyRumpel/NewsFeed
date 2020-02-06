@@ -1,7 +1,6 @@
 package com.arsoft.newsfeed.data.newsfeed.repository
 
-import android.util.Log
-import com.arsoft.newsfeed.MyDateTimeFormatHelper
+import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.data.models.*
 import com.arsoft.newsfeed.data.newsfeed.request.*
 import java.util.*
@@ -108,13 +107,19 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
 //                                       Log.e("VIDEO_DURATION", videoDuration.toString())
 
                                     }
+                                }
+                                if (
+                                    videoPreviewImage != null &&
+                                    videoDuration != null &&
+                                    videoID != null &&
+                                    videoOwnerID != null)
+                                {
                                     attachments.add(VideoModel(
                                         videoPreviewImage = videoPreviewImage,
                                         videoDuration = videoDuration,
                                         videoID = videoID,
                                         videoOwnerID = videoOwnerID
                                     ))
-
                                 }
                             }
                         }
