@@ -1,5 +1,7 @@
 package com.arsoft.newsfeed.data.newsfeed.repository
 
+import android.provider.ContactsContract
+import android.util.Log
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.data.models.*
 import com.arsoft.newsfeed.data.newsfeed.request.*
@@ -31,16 +33,26 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
             filters = FILTERS
         ).await()
 
+        var avatar = ""
+        var name = ""
+//        var postText = ""
 
-        var photoURLs: String?
-        var videoPreviewImage: String?
-        var videoDuration: Int?
-        var videoID: String?
-        var videoOwnerID: String?
-        var videoPreviewImageWidth: Int
+        var videoPreviewImage = ""
+        var videoDuration = 0
+        var videoID = ""
+        var videoOwnerID = ""
+        var videoPreviewImageWidth = 0
+//
+//        val currentTime = Calendar.getInstance().timeInMillis
+//        var attachments = ArrayList<IAttachment>()
+        val photoSizes = ArrayList<Sizes>()
+
+
+        var photoURLs: String? = null
         val currentTime = Calendar.getInstance().timeInMillis
-        var attachments: ArrayList<IAttachment>
-        var postText: String
+        var attachments = ArrayList<IAttachment>()
+        var postText = ""
+
 
         for (item in result.response.profiles) {
             sourceProfiles.add(
@@ -59,88 +71,159 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                     avatar = item.photo_100))
         }
 
+//        for (item in result.response.items) {
+//            for (source in sourceProfiles) {
+//                if (abs(item.source_id) == source.id) {
+//                    if (!item.attachments.isNullOrEmpty()) {
+//
+//                        videoPreviewImage = ""
+//                        videoDuration = 0
+//                        videoID = ""
+//                        videoOwnerID = ""
+//                        videoPreviewImageWidth = 0
+//                        photoURLs = null
+//                        attachments = ArrayList()
+//                        avatar = source.avatar
+//                        name = source.name
+//
+//                        for (attachment in item.attachments) {
+//                            when (attachment.type) {
+//                                ATTACHMENTS_TYPE_PHOTO -> {
+//                                    for (size in attachment.photo.sizes) {
+//                                        if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
+//                                            photoURLs = size.url
+//                                        }
+//                                    }
+//                                    attachments.add(PhotoModel(photoURLs!!))
+//                                }
+//                                ATTACHMENTS_TYPE_VIDEO -> {
+//                                    attachment.video.image.forEach {
+//                                        if (it.width in (videoPreviewImageWidth + 1)..999) {
+//                                            videoPreviewImageWidth = it.width
+//                                        }
+//                                    }
+//
+//                                    for (image in attachment.video.image) {
+//
+//                                        if (videoPreviewImageWidth == image.width  ) {
+//                                            videoPreviewImage = image.url
+//                                            videoDuration = attachment.video.duration
+//                                            videoOwnerID = attachment.video.owner_id.toString()
+//                                            videoID = "${videoOwnerID}_${attachment.video.id}"
+//                                        }
+//                                    }
+//                                    if (
+//                                        videoPreviewImage != null &&
+//                                        videoDuration != null &&
+//                                        videoID != null &&
+//                                        videoOwnerID != null)
+//                                    {
+//                                        attachments.add(VideoModel(
+//                                            videoPreviewImage = videoPreviewImage,
+//                                            videoDuration = videoDuration,
+//                                            videoID = videoID,
+//                                            videoOwnerID = videoOwnerID
+//                                        ))
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            newsFeedList.add(
+//                FeedItemModel(
+//                    avatar = avatar,
+//                    sourceName = name,
+//                    postText = item.text,
+//                    attachments = attachments,
+//                    date = MyDateTimeFormatHelper.timeFormat(item.date * 1000, currentTime)))
+//        }
+
+
         for (item in result.response.items) {
             for (source in sourceProfiles) {
+
                 if (abs(item.source_id) == source.id) {
+
+                    avatar = source.avatar
+                    name = source.name
+                    postText = item.text
+
+                    attachments.clear()
+
                     if (!item.attachments.isNullOrEmpty()) {
-                        videoPreviewImage = null
-                        videoDuration = null
-                        videoID = null
-                        videoOwnerID = null
-                        videoPreviewImageWidth = 0
-                        photoURLs = null
-                        postText = ""
-                        attachments = ArrayList()
-
-                        if (item.text != "") {
-                            postText = item.text
-                        }
-
                         for (attachment in item.attachments) {
-                            if (attachment.type == ATTACHMENTS_TYPE_PHOTO) {
-                                for (size in attachment.photo.sizes) {
-                                    if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
-                                        photoURLs = size.url
+                            when(attachment.type) {
+                                ATTACHMENTS_TYPE_PHOTO -> {
+//                                    val photoWithMaxWidth = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+//                                    if (photoWithMaxWidth != null) {
+//                                        attachments.add(PhotoModel(photoURL = photoWithMaxWidth.url))
+//                                    }
+
+                                    for (size in attachment.photo.sizes) {
+                                        if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
+                                            photoURLs = size.url
+                                        }
                                     }
-                                }
-                                attachments.add(PhotoModel(photoURLs!!))
-                            }
-                            if (attachment.type == ATTACHMENTS_TYPE_VIDEO) {
+                                    attachments.add(PhotoModel(photoURLs!!))
 
-                                attachment.video.image.forEach {
-                                    if (it.width in (videoPreviewImageWidth + 1)..999) {
-                                        videoPreviewImageWidth = it.width
+                                }
+                                ATTACHMENTS_TYPE_VIDEO -> {
+                                    attachment.video.image.forEach {
+                                        if (it.width in (videoPreviewImageWidth + 1)..999) {
+                                            videoPreviewImageWidth = it.width
+                                        }
                                     }
-                                }
 
-                                for (image in attachment.video.image) {
+                                    for (image in attachment.video.image) {
+                                        if (videoPreviewImageWidth == image.width) {
+                                            videoPreviewImage = image.url
+                                            videoDuration = attachment.video.duration
+                                            videoOwnerID = attachment.video.owner_id.toString()
+                                            videoID = "${videoOwnerID}_${attachment.video.id}"
 
-                                    if (videoPreviewImageWidth == image.width  ) {
-                                        videoPreviewImage = image.url
-                                        videoDuration = attachment.video.duration
-                                        videoOwnerID = attachment.video.owner_id.toString()
-                                        videoID = "${videoOwnerID}_${attachment.video.id}"
+                                        }
+                                    }
 
+                                    if (
+                                        videoPreviewImage != "" &&
+                                        videoDuration != 0 &&
+                                        videoID != "" &&
+                                        videoOwnerID != ""){
 
-//                                       Log.e("image_preview_width", videoPreviewImageWidth.toString())
-//                                       Log.e("image_preview", videoPreviewImage.toString())
-//                                       Log.e("VIDEO_DURATION", videoDuration.toString())
+                                        attachments.add(VideoModel(
+                                            videoPreviewImage = videoPreviewImage,
+                                            videoDuration = videoDuration,
+                                            videoOwnerID = videoOwnerID,
+                                            videoID = videoID
+                                        ))
 
                                     }
-                                }
-                                if (
-                                    videoPreviewImage != null &&
-                                    videoDuration != null &&
-                                    videoID != null &&
-                                    videoOwnerID != null)
-                                {
-                                    attachments.add(VideoModel(
-                                        videoPreviewImage = videoPreviewImage,
-                                        videoDuration = videoDuration,
-                                        videoID = videoID,
-                                        videoOwnerID = videoOwnerID
-                                    ))
                                 }
                             }
                         }
-
-                        newsFeedList.add(
-                            FeedItemModel(
-                                avatar = source.avatar,
-                                sourceName = source.name,
-                                postText = postText,
-                                attachments = attachments,
-                                date = MyDateTimeFormatHelper.timeFormat(item.date * 1000, currentTime)))
-//                        Log.e("image_preview_width", videoPreviewImageWidth.toString())
-//                        Log.e("image_preview", videoPreviewImage.toString())
-//                        Log.e("VIDEO_DURATION", videoDuration.toString())
-//                        Log.e("POST_TEXT", source.name + "\n" + postText + "\n \n \n ------------------- \n \n \n")
-
                     }
+
+
+
+
                 }
             }
+
+            newsFeedList.add(
+                FeedItemModel(
+                    avatar = avatar,
+                    sourceName = name,
+                    postText = postText,
+                    date = MyDateTimeFormatHelper.timeFormat(postDate = item.date * 1000, currentTime = currentTime),
+                    attachments = attachments
+                ))
         }
 
+        newsFeedList.forEach {
+            Log.e("ATTACHMNETS", "\n \n \n$it\n \n \n----------------")
+        }
 
         return newsFeedList
     }

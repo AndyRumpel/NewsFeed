@@ -1,6 +1,6 @@
 package com.arsoft.newsfeed.mvp.newsfeed
 
-import android.annotation.SuppressLint
+import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.arsoft.newsfeed.app.NewsFeedApplication
@@ -26,10 +26,13 @@ class NewsFeedPresenter: MvpPresenter<NewsFeedView>() {
     fun loadNewsFeed(accessToken: String){
         viewState.showLoading()
         newsFeedJob = GlobalScope.launch {
-            val newsFeedList: ArrayList<FeedItemModel> = newsFeedRepository.getNewsFeed(accessToken = accessToken)
+            val newsFeedList = newsFeedRepository.getNewsFeed(accessToken = accessToken)
             withContext(Dispatchers.Main) {
                 if (newsFeedList.isNotEmpty()) {
                     viewState.hideLoading()
+//                    for (item in newsFeedList) {
+//                        Log.e("ATTACHMENTS_PRESENTER", item.attachments.toString())
+//                    }
                     viewState.loadNewsFeed(items = newsFeedList)
                 }
             }

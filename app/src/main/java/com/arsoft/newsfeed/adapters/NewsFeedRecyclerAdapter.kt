@@ -1,5 +1,6 @@
 package com.arsoft.newsfeed.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +52,7 @@ class NewsFeedRecyclerAdapter(private val onAttachmentClickListener: Attachments
 
 
         fun bind(model: FeedItemModel) {
-
+//            Log.e("ATTACHMENTS", model.attachments.toString())
 
             layoutManager =
                 MultipleSpanGridLayoutManager(
@@ -74,33 +75,6 @@ class NewsFeedRecyclerAdapter(private val onAttachmentClickListener: Attachments
                     .into(avatarImg)
             }
             sourceNameTxt.text = model.sourceName
-
-
-
-//            if (model.videoPreviewImage != null && model.videoDuration != null
-//                && model.videoID != null && model.videoOwnerID != null) {
-//                Glide.with(itemView.context)
-//                    .load(model.videoPreviewImage)
-//                    .into(videoPreviewImage)
-//
-//                var videoDurationInSeconds = model.videoDuration % 60
-//                var videoDurationInMinutes = model.videoDuration.div(60)
-//
-//
-//                videoPreviewDurationTextView.text =
-//                    String.format("%02d", videoDurationInMinutes) + ":" + String.format(
-//                        "%02d",
-//                        videoDurationInSeconds
-//                    )
-//
-//
-//                videoPreviewImage.setOnClickListener {
-//                    onItemClickListener.onVideoClick(
-//                        videoID = model.videoID!!,
-//                        videoOwnerID = model.videoOwnerID!!
-//                    )
-//                }
-//            }
 
 
             if (model.postText != "") {
