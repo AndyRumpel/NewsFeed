@@ -1,26 +1,29 @@
 package com.arsoft.newsfeed.ui.newsfeed
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
-import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.data.likes.request.LikesResponse
 import com.arsoft.newsfeed.data.models.FeedItemModel
-import com.arsoft.newsfeed.data.models.PhotoModel
 import com.arsoft.newsfeed.helpers.recycler.NewsFeedItemDecoration
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens
+import kotlinx.android.synthetic.main.feed_item.*
 import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecyclerAdapter.OnAttachmentClickListener {
+class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
+    NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsFeedRecyclerAdapter
@@ -52,16 +55,25 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecycle
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val accessToken = arguments?.getString("access_token")
+
         if (arguments != null) {
-            presenter.loadNewsFeed(arguments?.getString("access_token")!!)
+            presenter.loadNewsFeed(accessToken = accessToken!!)
         }
 
-        adapter = NewsFeedRecyclerAdapter(onAttachmentClickListener = this)
+        swipeRefreshLayout.setOnRefreshListener {
+            presenter.refreshNewsFeed(accessToken = accessToken!!)
+            swipeRefreshLayout.isRefreshing = false
+        }
+
+        adapter = NewsFeedRecyclerAdapter(onNewsFeedItemClickListener = this)
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(NewsFeedItemDecoration(20))
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.newsfeed_menu, menu)
@@ -90,6 +102,11 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecycle
         adapter.notifyDataSetChanged()
     }
 
+    override fun refreshNewsFeed(items: ArrayList<FeedItemModel>) {
+        adapter.setupNewsFeedList(items = items)
+        adapter.notifyDataSetChanged()
+    }
+
     override fun showLoading() {
         recyclerView.visibility = View.INVISIBLE
         newsfeed_cpv.visibility = View.VISIBLE
@@ -106,6 +123,14 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecycle
     override fun showError(message: String) {
     }
 
+
+    override fun updateLikesCount(likes: LikesResponse, position: Int) {
+        recyclerView.layoutManager!!.findViewByPosition(position)!!.doOnLayout {
+            likes_count_textview.text = likes.response.like.toString()
+        }
+        adapter.notifyItemChanged(position)
+    }
+
     // OnItemClickListener implementation
     override fun onPhotoClick(photoURLs: ArrayList<String?>, position: Int) {
         router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
@@ -114,4 +139,14 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, AttachmentsRecycle
     override fun onVideoClick(videoID: String, videoOwnerID: String) {
         router.navigateTo(Screens.VideoPlayerScreen(videoID = videoID, videoOwnerID = videoOwnerID))
     }
+
+    override fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int) {
+        presenter.addLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    }
+
+    override fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int) {
+        presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    }
+
+
 }

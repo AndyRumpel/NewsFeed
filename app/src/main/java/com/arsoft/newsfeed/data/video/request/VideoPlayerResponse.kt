@@ -11,7 +11,19 @@ data class Files (
     val mp4_480 : String?,
     val mp4_720 : String?,
     val hls : String?
-)
+) {
+    fun getMax(): String {
+        return if (!mp4_720.isNullOrBlank()) {
+            mp4_720
+        } else  if (!mp4_480.isNullOrBlank()){
+            mp4_480
+        } else if (!mp4_360.isNullOrBlank()) {
+            mp4_360
+        } else {
+            mp4_240!!
+        }
+    }
+}
 
 data class First_frame (
 

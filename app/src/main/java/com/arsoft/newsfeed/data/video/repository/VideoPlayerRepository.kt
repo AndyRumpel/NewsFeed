@@ -15,25 +15,7 @@ class VideoPlayerRepository(private val apiService: VideoPlayerService) {
             version = VERSION
         ).await()
 
-        when {
-            result.response.items.first().files.mp4_720 != null -> {
-                Log.e("VIDEO", result.response.items.first().files.mp4_720!!)
-                return result.response.items.first().files.mp4_720!!
-            }
-            result.response.items.first().files.mp4_480 != null -> {
-                Log.e("VIDEO", result.response.items.first().files.mp4_480!!)
-                return result.response.items.first().files.mp4_480!!
-            }
-            result.response.items.first().files.mp4_360 != null -> {
-                Log.e("VIDEO", result.response.items.first().files.mp4_360!!)
-                return result.response.items.first().files.mp4_360!!
-            }
-            result.response.items.first().files.mp4_240 != null -> {
-                Log.e("VIDEO", result.response.items.first().files.mp4_240!!)
-                return result.response.items.first().files.mp4_240!!
-            }
-            else -> return ""
-        }
+        return result.response.items.first().files.getMax()
 
     }
 }

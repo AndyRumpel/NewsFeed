@@ -35,23 +35,23 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
 
         var avatar = ""
         var name = ""
-//        var postText = ""
 
         var videoPreviewImage = ""
         var videoDuration = 0
         var videoID = ""
         var videoOwnerID = ""
         var videoPreviewImageWidth = 0
-//
-//        val currentTime = Calendar.getInstance().timeInMillis
-//        var attachments = ArrayList<IAttachment>()
-        val photoSizes = ArrayList<Sizes>()
-
-
-        var photoURLs: String? = null
-        val currentTime = Calendar.getInstance().timeInMillis
-        var attachments = ArrayList<IAttachment>()
+        var attachments: ArrayList<IAttachment>
         var postText = ""
+        var likes: Likes
+        var comments: Comments
+        var reposts: Reposts
+        var views: Views
+        var ownerId = 0L
+        var postId = 0L
+        var isFavorite: Boolean
+
+        var isValid: Boolean
 
 
         for (item in result.response.profiles) {
@@ -71,102 +71,68 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                     avatar = item.photo_100))
         }
 
-//        for (item in result.response.items) {
-//            for (source in sourceProfiles) {
-//                if (abs(item.source_id) == source.id) {
-//                    if (!item.attachments.isNullOrEmpty()) {
-//
-//                        videoPreviewImage = ""
-//                        videoDuration = 0
-//                        videoID = ""
-//                        videoOwnerID = ""
-//                        videoPreviewImageWidth = 0
-//                        photoURLs = null
-//                        attachments = ArrayList()
-//                        avatar = source.avatar
-//                        name = source.name
-//
-//                        for (attachment in item.attachments) {
-//                            when (attachment.type) {
-//                                ATTACHMENTS_TYPE_PHOTO -> {
-//                                    for (size in attachment.photo.sizes) {
-//                                        if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
-//                                            photoURLs = size.url
-//                                        }
-//                                    }
-//                                    attachments.add(PhotoModel(photoURLs!!))
-//                                }
-//                                ATTACHMENTS_TYPE_VIDEO -> {
-//                                    attachment.video.image.forEach {
-//                                        if (it.width in (videoPreviewImageWidth + 1)..999) {
-//                                            videoPreviewImageWidth = it.width
-//                                        }
-//                                    }
-//
-//                                    for (image in attachment.video.image) {
-//
-//                                        if (videoPreviewImageWidth == image.width  ) {
-//                                            videoPreviewImage = image.url
-//                                            videoDuration = attachment.video.duration
-//                                            videoOwnerID = attachment.video.owner_id.toString()
-//                                            videoID = "${videoOwnerID}_${attachment.video.id}"
-//                                        }
-//                                    }
-//                                    if (
-//                                        videoPreviewImage != null &&
-//                                        videoDuration != null &&
-//                                        videoID != null &&
-//                                        videoOwnerID != null)
-//                                    {
-//                                        attachments.add(VideoModel(
-//                                            videoPreviewImage = videoPreviewImage,
-//                                            videoDuration = videoDuration,
-//                                            videoID = videoID,
-//                                            videoOwnerID = videoOwnerID
-//                                        ))
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            newsFeedList.add(
-//                FeedItemModel(
-//                    avatar = avatar,
-//                    sourceName = name,
-//                    postText = item.text,
-//                    attachments = attachments,
-//                    date = MyDateTimeFormatHelper.timeFormat(item.date * 1000, currentTime)))
-//        }
-
-
         for (item in result.response.items) {
-            for (source in sourceProfiles) {
 
+            attachments = ArrayList()
+            isValid = true
+            ownerId = item.source_id
+            postId = item.post_id
+            isFavorite = item.is_favorite
+
+            with(item.likes) {
+                likes = Likes(
+                    count = count,
+                    can_like = can_like,
+                    user_likes = user_likes,
+                    can_publish = can_publish
+                )
+            }
+
+            with(item.comments) {
+                comments = Comments(
+                    count = count,
+                    can_post = can_post,
+                    groups_can_post = groups_can_post
+                )
+            }
+
+            with(item.reposts) {
+                reposts = Reposts(
+                    count = count,
+                    user_reposted = user_reposted
+                )
+            }
+
+            with(item.views) {
+                views = Views(
+                    count = count
+                )
+            }
+
+
+            for (source in sourceProfiles) {
                 if (abs(item.source_id) == source.id) {
 
                     avatar = source.avatar
                     name = source.name
-                    postText = item.text
+                    if (!item.copy_history.isNullOrEmpty()) {
+                        isValid = false
+                    }
 
-                    attachments.clear()
+                    if (item.text.isBlank()) {
+                        postText = ""
+                    } else {
+                        postText = item.text
+                    }
 
                     if (!item.attachments.isNullOrEmpty()) {
                         for (attachment in item.attachments) {
                             when(attachment.type) {
                                 ATTACHMENTS_TYPE_PHOTO -> {
-//                                    val photoWithMaxWidth = attachment.photo.sizes.maxBy { sizes -> sizes.width }
-//                                    if (photoWithMaxWidth != null) {
-//                                        attachments.add(PhotoModel(photoURL = photoWithMaxWidth.url))
-//                                    }
-
-                                    for (size in attachment.photo.sizes) {
-                                        if (size.type == PHOTO_SIZE_WHERE_MAX_SIDE_604PX) {
-                                            photoURLs = size.url
-                                        }
+                                    val photoWithMaxWidth = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+                                    if (photoWithMaxWidth != null) {
+                                        attachments.add(PhotoModel(photoURL = photoWithMaxWidth.url))
                                     }
-                                    attachments.add(PhotoModel(photoURLs!!))
 
                                 }
                                 ATTACHMENTS_TYPE_VIDEO -> {
@@ -204,25 +170,25 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                             }
                         }
                     }
-
-
-
-
                 }
             }
-
-            newsFeedList.add(
-                FeedItemModel(
-                    avatar = avatar,
-                    sourceName = name,
-                    postText = postText,
-                    date = MyDateTimeFormatHelper.timeFormat(postDate = item.date * 1000, currentTime = currentTime),
-                    attachments = attachments
-                ))
-        }
-
-        newsFeedList.forEach {
-            Log.e("ATTACHMNETS", "\n \n \n$it\n \n \n----------------")
+            if (isValid) {
+                newsFeedList.add(
+                    FeedItemModel(
+                        avatar = avatar,
+                        sourceName = name,
+                        postText = postText,
+                        attachments = attachments,
+                        date = item.date,
+                        likes = likes,
+                        comments = comments,
+                        reposts = reposts,
+                        views = views,
+                        ownerId = ownerId,
+                        postId = postId,
+                        isFavorite = isFavorite
+                    ))
+            }
         }
 
         return newsFeedList

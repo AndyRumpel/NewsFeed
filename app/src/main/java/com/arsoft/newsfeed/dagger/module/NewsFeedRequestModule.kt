@@ -7,6 +7,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,15 +23,14 @@ class NewsFeedRequestModule {
     fun provideGson(): Gson =
         GsonBuilder()
             .setLenient()
-            //.registerTypeAdapter(NewsFeedResponse::class.java, NewsFeedResponseDeserializer())
-            //.registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
             .create()
 
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .protocols(mutableListOf(Protocol.HTTP_1_1))
+            //.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .connectTimeout(60, TimeUnit.SECONDS)
             .build()
 

@@ -2,7 +2,6 @@ package com.arsoft.newsfeed.mvp.login
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.app.NewsFeedApplication.Companion.prefs
 import com.arsoft.newsfeed.data.DataProvider
 import com.arsoft.newsfeed.navigation.screens.Screens

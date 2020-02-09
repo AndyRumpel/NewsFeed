@@ -17,7 +17,7 @@ import com.bumptech.glide.request.RequestOptions.bitmapTransform
 import jp.wasabeef.glide.transformations.CropSquareTransformation
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
-class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val attachments = ArrayList<IAttachment>()
 
@@ -28,8 +28,8 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
-            AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> AttachmentPhotoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_photo, parent, false), onAttachmentClickListener)
-            else ->                                          AttachmentVideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_video, parent, false), onAttachmentClickListener)
+            AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> AttachmentPhotoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_photo, parent, false), onNewsFeedItemClickListener)
+            else ->                                          AttachmentVideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_video, parent, false), onNewsFeedItemClickListener)
 
         }
     }
@@ -64,7 +64,7 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
         }
     }
 
-    class AttachmentPhotoViewHolder(itemView: View, private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.ViewHolder(itemView) {
+    class AttachmentPhotoViewHolder(itemView: View, private val onNewsFeedItemClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
         private val photoImageView = itemView.findViewById<ImageView>(R.id.attachment_photo_image_view)
 
         fun bind(model: PhotoModel, attachments: ArrayList<IAttachment>, position: Int) {
@@ -78,6 +78,7 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
                 Glide.with(itemView.context)
                     .load(model.photoURL)
                     .apply(bitmapTransform(multiTransformation))
+                    .onlyRetrieveFromCache(true)
                     .into(photoImageView)
             } else {
                 Glide.with(itemView.context)
@@ -94,11 +95,11 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
                         photos.add(attachment.photoURL)
                     }
                 }
-                onAttachmentClickListener.onPhotoClick(photos, position)
+                onNewsFeedItemClickListener.onPhotoClick(photos, position)
             }
         }
     }
-    class AttachmentVideoViewHolder(itemView: View, private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.ViewHolder(itemView) {
+    class AttachmentVideoViewHolder(itemView: View, private val onNewsFeedItemClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
 
         private val previewImageView = itemView.findViewById<ImageView>(R.id.video_preview_image)
         private val videoDurationTextView = itemView.findViewById<TextView>(R.id.video_duration_text_view)
@@ -121,7 +122,7 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
             }
 
             previewImageView.setOnClickListener {
-                onAttachmentClickListener.onVideoClick(videoID = model.videoID, videoOwnerID = model.videoOwnerID)
+                onNewsFeedItemClickListener.onVideoClick(videoID = model.videoID, videoOwnerID = model.videoOwnerID)
             }
 
             val videoDurationInSeconds = model.videoDuration % 60
@@ -140,9 +141,5 @@ class AttachmentsRecyclerAdapter(private val onAttachmentClickListener: OnAttach
         ATTACHMENT_TYPE_VIDEO
     }
 
-    interface OnAttachmentClickListener{
-        fun onPhotoClick(photoURLs: ArrayList<String?> ,position: Int)
-        fun onVideoClick(videoID: String, videoOwnerID: String)
-    }
 
 }

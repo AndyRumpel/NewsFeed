@@ -68,7 +68,8 @@ data class First_frame (
 data class Comments (
 
     val count : Int,
-    val can_post : Int
+    val can_post : Int,
+    val groups_can_post: Boolean
 )
 
 data class Groups (
@@ -104,14 +105,26 @@ data class Items (
     val reposts : Reposts,
     val views : Views,
     val is_favorite : Boolean,
-    val post_id : Int,
+    val post_id : Long,
     val push_subscription : Push_subscription,
-    val track_code : String
+    val track_code : String,
+    val copy_history: List<Copy_history>
+)
+
+data class Copy_history (
+    val id : Int,
+    val owner_id : Int,
+    val from_id : Int,
+    val date : Int,
+    val post_type : String,
+    val text : String,
+    val attachments : List<Attachment>,
+    val post_source : Post_source
 )
 
 data class Likes (
 
-    val count : Int,
+    var count : Int,
     val user_likes : Int,
     val can_like : Int,
     val can_publish : Int

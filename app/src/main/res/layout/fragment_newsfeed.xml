@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefreshLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
@@ -7,19 +8,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/newsfeed_recycler"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/newsfeed_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/newsfeed_cpv"
-        android:layout_width="@dimen/cpv_size"
-        android:layout_height="@dimen/cpv_size"
-        app:cpv_animAutostart="true"
-        app:cpv_color="@color/colorAccent"
-        app:cpv_indeterminate="true"
-        android:layout_gravity="center"
-        />
+        <com.github.rahatarmanahmed.cpv.CircularProgressView
+            android:id="@+id/newsfeed_cpv"
+            android:layout_width="@dimen/cpv_size"
+            android:layout_height="@dimen/cpv_size"
+            app:cpv_animAutostart="true"
+            app:cpv_color="@color/colorAccent"
+            app:cpv_indeterminate="true"
+            android:layout_gravity="center"
+            />
 
-</FrameLayout>
+
+    </FrameLayout>
+
+
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
