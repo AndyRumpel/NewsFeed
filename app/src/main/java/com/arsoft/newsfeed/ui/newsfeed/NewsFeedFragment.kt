@@ -1,9 +1,7 @@
 package com.arsoft.newsfeed.ui.newsfeed
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import androidx.core.view.doOnLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
@@ -17,7 +15,7 @@ import com.arsoft.newsfeed.helpers.recycler.NewsFeedItemDecoration
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens
-import kotlinx.android.synthetic.main.feed_item.*
+import kotlinx.android.synthetic.main.feed_item.view.*
 import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
@@ -125,10 +123,13 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
 
 
     override fun updateLikesCount(likes: LikesResponse, position: Int) {
-        recyclerView.layoutManager!!.findViewByPosition(position)!!.doOnLayout {
-            likes_count_textview.text = likes.response.like.toString()
+        with(recyclerView.findViewHolderForLayoutPosition(position)!!.itemView.likes_count_textview){
+            if (likes.response.likes == 0) {
+                text = ""
+            } else {
+                text = likes.response.likes.toString()
+            }
         }
-        adapter.notifyItemChanged(position)
     }
 
     // OnItemClickListener implementation

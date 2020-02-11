@@ -5,11 +5,12 @@ import android.util.Log
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.data.models.*
 import com.arsoft.newsfeed.data.newsfeed.request.*
+import com.github.chrisbanes.photoview.PhotoView
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
-class NewsFeedRepository(val apiService: NewsFeedService) {
+class NewsFeedRepository(private val apiService: NewsFeedService) {
 
 
     private val ITEMS_COUNT = 100
@@ -50,6 +51,7 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
         var ownerId = 0L
         var postId = 0L
         var isFavorite: Boolean
+        var photoWidth = 0
 
         var isValid: Boolean
 
@@ -129,11 +131,22 @@ class NewsFeedRepository(val apiService: NewsFeedService) {
                         for (attachment in item.attachments) {
                             when(attachment.type) {
                                 ATTACHMENTS_TYPE_PHOTO -> {
-                                    val photoWithMaxWidth = attachment.photo.sizes.maxBy { sizes -> sizes.width }
-                                    if (photoWithMaxWidth != null) {
-                                        attachments.add(PhotoModel(photoURL = photoWithMaxWidth.url))
-                                    }
+//                                    attachment.photo.sizes.forEach{
+//                                        if  (it.width in (photoWidth)..999) {
+//                                            photoWidth = it.width
+//                                        }
+//                                    }
+//
+//                                    for (photo in attachment.photo.sizes) {
+//                                        if (photo.width == photoWidth) {
+//                                            attachments.add(PhotoModel(photoURL = photo.url))
+//                                        }
+//                                    }
 
+                                    val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+                                    if (photo != null) {
+                                        attachments.add(PhotoModel(photoURL = photo.url))
+                                    }
                                 }
                                 ATTACHMENTS_TYPE_VIDEO -> {
                                     attachment.video.image.forEach {

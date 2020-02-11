@@ -13,7 +13,9 @@ import com.arsoft.newsfeed.data.models.PhotoModel
 import com.arsoft.newsfeed.data.models.VideoModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions.bitmapTransform
+import com.squareup.picasso.Target
 import jp.wasabeef.glide.transformations.CropSquareTransformation
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
@@ -74,16 +76,18 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
                 RoundedCornersTransformation(40, 0, RoundedCornersTransformation.CornerType.ALL)
             )
 
+
             if (attachments.count() > 1) {
                 Glide.with(itemView.context)
                     .load(model.photoURL)
                     .apply(bitmapTransform(multiTransformation))
-                    .onlyRetrieveFromCache(true)
                     .into(photoImageView)
+
             } else {
                 Glide.with(itemView.context)
                     .load(model.photoURL)
                     .into(photoImageView)
+
             }
 
 

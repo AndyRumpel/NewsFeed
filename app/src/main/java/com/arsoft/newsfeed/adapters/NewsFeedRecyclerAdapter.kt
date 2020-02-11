@@ -1,11 +1,13 @@
 package com.arsoft.newsfeed.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.FeedItemModel
@@ -135,13 +137,19 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
 
 
             likesButton.setOnClickListener {
-                if (!model.isFavorite && model.likes.user_likes == 0) {
+                if (!model.isFavorite) {
                     onNewsFeedItemClickListener.onAddLikeClick(
                         ownerId = model.ownerId,
                         itemId = model.postId,
                         position = adapterPosition)
                     model.isFavorite = true
                     likesButton.setImageResource(R.drawable.ic_favorite)
+                    if (android.os.Build.VERSION.SDK_INT >= 23) {
+                        likesCountTextView.setTextColor(itemView.context.getColor(R.color.colorAccent))
+                    } else {
+                        likesCountTextView.setTextColor(itemView.context.resources.getColor(R.color.colorAccent))
+                    }
+
                 } else {
                     onNewsFeedItemClickListener.onDeleteLikeClick(
                         ownerId = model.ownerId,
@@ -150,10 +158,9 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
                     )
                     model.isFavorite = false
                     likesButton.setImageResource(R.drawable.ic_favorite_border)
+                    likesCountTextView.setTextColor(Color.WHITE)
                 }
-
             }
-
         }
 
         interface OnNewsFeedItemClickListener{

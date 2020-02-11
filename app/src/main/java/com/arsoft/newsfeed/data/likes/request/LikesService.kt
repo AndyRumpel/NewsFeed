@@ -29,8 +29,6 @@ interface LikesService {
         @Query(value = "v") version: String
     ): Deferred<LikesResponse>
 
-
-
     companion object Factory {
         fun create(): LikesService {
             val okHttpClient = OkHttpClient.Builder()

@@ -5,5 +5,5 @@ data class LikesResponse(
 )
 
 data class Response(
-    val like: Int
+    val likes: Int
 )
