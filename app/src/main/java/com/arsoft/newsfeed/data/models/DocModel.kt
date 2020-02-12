@@ -1,5 +1,5 @@
 package com.arsoft.newsfeed.data.models
 
-data class PhotoModel(
+data class DocModel(
     val url: String?
-) : IAttachment
+): IAttachment

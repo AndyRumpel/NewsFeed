@@ -22,7 +22,6 @@ class NewsFeedRequestModule {
     @Singleton
     fun provideGson(): Gson =
         GsonBuilder()
-            .setLenient()
             .create()
 
     @Provides

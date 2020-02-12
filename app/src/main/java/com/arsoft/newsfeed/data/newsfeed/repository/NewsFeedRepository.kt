@@ -1,12 +1,8 @@
 package com.arsoft.newsfeed.data.newsfeed.repository
 
-import android.provider.ContactsContract
 import android.util.Log
-import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.data.models.*
 import com.arsoft.newsfeed.data.newsfeed.request.*
-import com.github.chrisbanes.photoview.PhotoView
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
@@ -19,6 +15,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
 
     private val ATTACHMENTS_TYPE_PHOTO = "photo"
     private val ATTACHMENTS_TYPE_VIDEO = "video"
+    private val ATTACHMENTS_TYPE_DOC = "doc"
     private val PHOTO_SIZE_WHERE_MAX_SIDE_807PX = 'y'
     private val PHOTO_SIZE_WHERE_MAX_SIDE_604PX = 'x'
     private val VIDEO_PREVIEW_IMAGE_WIDTH = 720
@@ -106,9 +103,15 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.views) {
-                views = Views(
-                    count = count
-                )
+                if (count == null) {
+                    views = Views(
+                        count = 0
+                    )
+                } else {
+                    views = Views(
+                        count = count
+                    )
+                }
             }
 
 
@@ -131,21 +134,9 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                         for (attachment in item.attachments) {
                             when(attachment.type) {
                                 ATTACHMENTS_TYPE_PHOTO -> {
-//                                    attachment.photo.sizes.forEach{
-//                                        if  (it.width in (photoWidth)..999) {
-//                                            photoWidth = it.width
-//                                        }
-//                                    }
-//
-//                                    for (photo in attachment.photo.sizes) {
-//                                        if (photo.width == photoWidth) {
-//                                            attachments.add(PhotoModel(photoURL = photo.url))
-//                                        }
-//                                    }
-
                                     val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
                                     if (photo != null) {
-                                        attachments.add(PhotoModel(photoURL = photo.url))
+                                        attachments.add(PhotoModel(url = photo.url))
                                     }
                                 }
                                 ATTACHMENTS_TYPE_VIDEO -> {
@@ -179,6 +170,9 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                                         ))
 
                                     }
+                                }
+                                ATTACHMENTS_TYPE_DOC -> {
+                                    attachments.add(DocModel(url = attachment.doc.url))
                                 }
                             }
                         }

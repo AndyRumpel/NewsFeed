@@ -21,7 +21,38 @@ data class NewsFeedResponse (
 data class Attachment(
     val type: String,
     val photo: Photo,
-    val video: Video
+    val video: Video,
+    val doc: Doc
+)
+
+data class Doc(
+    val id: Int,
+    val owner_id: Int,
+    val title: String,
+    val sizes: Int,
+    val ext: String,
+    val url: String,
+    val date: Long,
+    val type: Int,
+    val preview: Preview,
+    val is_licensed: Int,
+    val access_key: String
+)
+
+data class Preview(
+    val photo: PreviewPhoto,
+    val video: PreviewVideo
+)
+
+data class PreviewPhoto(
+    val sizes: List<Sizes>
+)
+
+data class PreviewVideo(
+    val src: String,
+    val width: Int,
+    val height: Int,
+    val file_size: Int
 )
 
 data class Video (
@@ -201,5 +232,5 @@ data class Sizes (
 
 data class Views (
 
-    val count : Int
+    val count : Int?
 )

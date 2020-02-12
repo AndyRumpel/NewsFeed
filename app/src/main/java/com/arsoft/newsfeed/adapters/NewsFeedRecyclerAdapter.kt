@@ -128,7 +128,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
                 repostsCountTextView.text = ""
             }
 
-            if (model.views.count > 0) {
+            if (model.views.count != null && model.views.count > 0) {
                 viewsCountTextView.text = model.views.count.toString()
             } else {
                 viewsCountTextView.text = ""
