@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.FeedItemModel
@@ -22,6 +21,7 @@ import kotlin.collections.ArrayList
 class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val newsFeedList: ArrayList<FeedItemModel> = ArrayList()
+    private lateinit var loadMoreOwner: LoadMoreOwner
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.feed_item, parent, false)
@@ -36,14 +36,29 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         (holder as NewsFeedViewHolder).bind(newsFeedList[position])
     }
 
-
-
-    fun getItem(position: Int): FeedItemModel = newsFeedList[position]
-
-
     fun setupNewsFeedList(items: ArrayList<FeedItemModel>){
+        newsFeedList.addAll(items)
+    }
+
+    fun addMoreNewsFeedListItems(items: ArrayList<FeedItemModel>) {
         newsFeedList.clear()
         newsFeedList.addAll(items)
+    }
+
+    fun setLoadMoreCallback(loadMoreOwner: LoadMoreOwner) {
+        this.loadMoreOwner = loadMoreOwner
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        val layoutPosition = holder.layoutPosition
+        if (layoutPosition == this.itemCount - 10) {
+            loadMoreOwner.loadMore(newsFeedList[layoutPosition].startFrom)
+        }
+    }
+
+    interface LoadMoreOwner {
+        fun loadMore(startFrom: String)
     }
 
     class NewsFeedViewHolder(itemView: View, private val onNewsFeedItemClickListener: OnNewsFeedItemClickListener) : RecyclerView.ViewHolder(itemView){
@@ -67,7 +82,6 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
 
 
         fun bind(model: FeedItemModel) {
-//            Log.e("ATTACHMENTS", model.attachments.toString())
 
             layoutManager =
                 MultipleSpanGridLayoutManager(
@@ -83,7 +97,6 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
             adapter.notifyDataSetChanged()
 
 
-
             if (model.avatar.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(model.avatar)
@@ -91,10 +104,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
             }
             sourceNameTxt.text = model.sourceName
 
-
-            if (model.postText != "") {
-                postTextTxt.text = model.postText
-            }
+            postTextTxt.text = model.postText
 
             currentTime = Calendar.getInstance().timeInMillis
             dateTextView.text = MyDateTimeFormatHelper.timeFormat(postDate = model.date * 1000, currentTime = currentTime)
@@ -168,7 +178,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
             fun onVideoClick(videoID: String, videoOwnerID: String)
             fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int)
             fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int)
+            fun onCommentsButtonClick(model: FeedItemModel)
         }
-
     }
 }

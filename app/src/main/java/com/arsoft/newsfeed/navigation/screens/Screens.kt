@@ -1,6 +1,8 @@
 package com.arsoft.newsfeed.navigation.screens
 
 import androidx.fragment.app.Fragment
+import com.arsoft.newsfeed.data.models.FeedItemModel
+import com.arsoft.newsfeed.ui.comments.CommentsFragment
 import com.arsoft.newsfeed.ui.login.LoginFragment
 import com.arsoft.newsfeed.ui.newsfeed.NewsFeedFragment
 import com.arsoft.newsfeed.ui.photo.ViewPhotoFragment
@@ -32,6 +34,14 @@ class Screens {
     ): SupportAppScreen() {
         override fun getFragment(): Fragment {
             return VideoPlayerFragment.getNewInstance(videoID = videoID, videoOwnerID = videoOwnerID)
+        }
+    }
+
+    class CommentsScreen(
+        private val model: FeedItemModel
+    ): SupportAppScreen() {
+        override fun getFragment(): Fragment {
+            return CommentsFragment.getNewInstance(model = model)
         }
     }
 }

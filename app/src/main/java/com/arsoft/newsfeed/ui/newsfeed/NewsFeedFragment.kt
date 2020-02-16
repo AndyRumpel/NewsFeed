@@ -20,11 +20,12 @@ import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
+class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAdapter.LoadMoreOwner,
     NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsFeedRecyclerAdapter
+    private var accessToken: String? = ""
 
     companion object{
         fun getNewInstance(accessToken: String) = NewsFeedFragment().apply {
@@ -53,7 +54,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val accessToken = arguments?.getString("access_token")
+        accessToken = arguments?.getString("access_token")
 
         if (arguments != null) {
             presenter.loadNewsFeed(accessToken = accessToken!!)
@@ -65,10 +66,21 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
         }
 
         adapter = NewsFeedRecyclerAdapter(onNewsFeedItemClickListener = this)
+        adapter.setLoadMoreCallback(this)
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(NewsFeedItemDecoration(20))
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
+
+//        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                super.onScrollStateChanged(recyclerView, newState)
+//                if(newState == adapter.itemCount) {
+//
+//                }
+//            }
+//        })
+
     }
 
 
@@ -97,6 +109,11 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
 
     override fun loadNewsFeed(items: ArrayList<FeedItemModel>) {
         adapter.setupNewsFeedList(items = items)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun loadMoreNewsFeed(items: ArrayList<FeedItemModel>) {
+        adapter.addMoreNewsFeedListItems(items)
         adapter.notifyDataSetChanged()
     }
 
@@ -132,6 +149,10 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
         }
     }
 
+    override fun loadMore(startFrom: String) {
+        presenter.loadMoreNewsFeed(accessToken = accessToken!!, startFrom = startFrom)
+    }
+
     // OnItemClickListener implementation
     override fun onPhotoClick(photoURLs: ArrayList<String?>, position: Int) {
         router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
@@ -149,5 +170,8 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView,
         presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
     }
 
+    override fun onCommentsButtonClick(model: FeedItemModel) {
+        router.navigateTo(Screens.CommentsScreen(model = model))
+    }
 
 }

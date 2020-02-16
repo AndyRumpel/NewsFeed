@@ -43,9 +43,16 @@ class NewsFeedPresenter: MvpPresenter<NewsFeedView>() {
         newsFeedJob = GlobalScope.launch {
             val newsFeedList = newsFeedRepository.getNewsFeed(accessToken = accessToken)
             withContext(Dispatchers.Main) {
-                if (newsFeedList.isNotEmpty()) {
-                    viewState.loadNewsFeed(items = newsFeedList)
-                }
+                viewState.loadNewsFeed(items = newsFeedList)
+            }
+        }
+    }
+
+    fun loadMoreNewsFeed(accessToken: String, startFrom: String) {
+        newsFeedJob = GlobalScope.launch {
+            val newsFeedList = newsFeedRepository.loadMoreNewsFeed(accessToken = accessToken, startFrom = startFrom)
+            withContext(Dispatchers.Main) {
+                viewState.loadMoreNewsFeed(items = newsFeedList)
             }
         }
     }
@@ -67,6 +74,8 @@ class NewsFeedPresenter: MvpPresenter<NewsFeedView>() {
             }
         }
     }
+
+
 
     override fun onDestroy() {
         newsFeedJob?.cancel()

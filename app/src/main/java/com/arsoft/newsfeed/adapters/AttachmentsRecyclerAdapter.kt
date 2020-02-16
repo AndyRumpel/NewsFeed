@@ -82,6 +82,7 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
         fun bind(model: DocModel){
 
             Glide.with(itemView.context)
+                .asGif()
                 .load(model.url)
                 .into(docImageView)
 

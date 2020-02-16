@@ -10,6 +10,7 @@ import java.lang.NullPointerException
 @StateStrategyType(value = AddToEndSingleStrategy::class)
 interface NewsFeedView: MvpView {
     fun loadNewsFeed(items: ArrayList<FeedItemModel>)
+    fun loadMoreNewsFeed(items: ArrayList<FeedItemModel>)
     fun refreshNewsFeed(items: ArrayList<FeedItemModel>)
     fun showLoading()
     fun hideLoading()

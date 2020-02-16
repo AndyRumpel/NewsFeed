@@ -13,4 +13,13 @@ interface NewsFeedService {
         @Query(value = "v") version: String,
         @Query(value = "filters") filters: String
     ): Deferred<NewsFeedResponse>
+
+    @GET(value = "newsfeed.get")
+    fun loadMoreNewsFeed(
+        @Query(value = "count") count: Int,
+        @Query(value = "access_token") accessToken: String,
+        @Query(value = "v") version: String,
+        @Query(value = "filters") filters: String,
+        @Query(value = "start_from") startFrom: String
+    ): Deferred<NewsFeedResponse>
 }

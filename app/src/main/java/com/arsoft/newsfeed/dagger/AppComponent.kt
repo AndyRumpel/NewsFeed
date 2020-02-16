@@ -5,6 +5,7 @@ import com.arsoft.newsfeed.dagger.module.NavigationModule
 import com.arsoft.newsfeed.dagger.module.NewsFeedRequestModule
 import com.arsoft.newsfeed.data.newsfeed.repository.NewsFeedRepository
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
+import com.arsoft.newsfeed.ui.comments.CommentsFragment
 import com.arsoft.newsfeed.ui.login.LoginFragment
 import com.arsoft.newsfeed.ui.main.MainActivity
 import com.arsoft.newsfeed.ui.newsfeed.NewsFeedFragment
@@ -18,4 +19,5 @@ interface AppComponent {
     fun inject(fragment: LoginFragment)
     fun inject(fragment: NewsFeedFragment)
     fun inject(presenter: NewsFeedPresenter)
+    fun inject(fragment: CommentsFragment)
 }

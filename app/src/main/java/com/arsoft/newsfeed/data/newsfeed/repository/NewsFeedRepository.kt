@@ -31,6 +31,22 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             filters = FILTERS
         ).await()
 
+        return parseData(result)
+    }
+
+    suspend fun loadMoreNewsFeed(accessToken: String, startFrom: String): ArrayList<FeedItemModel> {
+        val result = apiService.loadMoreNewsFeed(
+            count = ITEMS_COUNT,
+            accessToken = accessToken,
+            version = VERSION,
+            filters = FILTERS,
+            startFrom = startFrom
+        ).await()
+
+        return parseData(result)
+    }
+
+    fun parseData(result: NewsFeedResponse): ArrayList<FeedItemModel> {
         var avatar = ""
         var name = ""
 
@@ -49,6 +65,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
         var postId = 0L
         var isFavorite: Boolean
         var photoWidth = 0
+        var startFrom = result.response.next_from
 
         var isValid: Boolean
 
@@ -79,7 +96,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             isFavorite = item.is_favorite
 
             with(item.likes) {
-                likes = Likes(
+                likes = com.arsoft.newsfeed.data.newsfeed.request.Likes(
                     count = count,
                     can_like = can_like,
                     user_likes = user_likes,
@@ -88,7 +105,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.comments) {
-                comments = Comments(
+                comments = com.arsoft.newsfeed.data.newsfeed.request.Comments(
                     count = count,
                     can_post = can_post,
                     groups_can_post = groups_can_post
@@ -96,7 +113,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.reposts) {
-                reposts = Reposts(
+                reposts = com.arsoft.newsfeed.data.newsfeed.request.Reposts(
                     count = count,
                     user_reposted = user_reposted
                 )
@@ -104,81 +121,74 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
 
             with(item.views) {
                 if (count == null) {
-                    views = Views(
+                    views = com.arsoft.newsfeed.data.newsfeed.request.Views(
                         count = 0
                     )
                 } else {
-                    views = Views(
+                    views = com.arsoft.newsfeed.data.newsfeed.request.Views(
                         count = count
                     )
                 }
             }
 
+            postText = item.text
+
 
             for (source in sourceProfiles) {
                 if (abs(item.source_id) == source.id) {
-
                     avatar = source.avatar
                     name = source.name
-                    if (!item.copy_history.isNullOrEmpty()) {
-                        isValid = false
-                    }
+                }
+            }
 
-                    if (item.text.isBlank()) {
-                        postText = ""
-                    } else {
-                        postText = item.text
-                    }
-
-                    if (!item.attachments.isNullOrEmpty()) {
-                        for (attachment in item.attachments) {
-                            when(attachment.type) {
-                                ATTACHMENTS_TYPE_PHOTO -> {
-                                    val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
-                                    if (photo != null) {
-                                        attachments.add(PhotoModel(url = photo.url))
-                                    }
-                                }
-                                ATTACHMENTS_TYPE_VIDEO -> {
-                                    attachment.video.image.forEach {
-                                        if (it.width in (videoPreviewImageWidth + 1)..999) {
-                                            videoPreviewImageWidth = it.width
-                                        }
-                                    }
-
-                                    for (image in attachment.video.image) {
-                                        if (videoPreviewImageWidth == image.width) {
-                                            videoPreviewImage = image.url
-                                            videoDuration = attachment.video.duration
-                                            videoOwnerID = attachment.video.owner_id.toString()
-                                            videoID = "${videoOwnerID}_${attachment.video.id}"
-
-                                        }
-                                    }
-
-                                    if (
-                                        videoPreviewImage != "" &&
-                                        videoDuration != 0 &&
-                                        videoID != "" &&
-                                        videoOwnerID != ""){
-
-                                        attachments.add(VideoModel(
-                                            videoPreviewImage = videoPreviewImage,
-                                            videoDuration = videoDuration,
-                                            videoOwnerID = videoOwnerID,
-                                            videoID = videoID
-                                        ))
-
-                                    }
-                                }
-                                ATTACHMENTS_TYPE_DOC -> {
-                                    attachments.add(DocModel(url = attachment.doc.url))
+            if (!item.attachments.isNullOrEmpty()) {
+                for (attachment in item.attachments) {
+                    when(attachment.type) {
+                        ATTACHMENTS_TYPE_PHOTO -> {
+                            val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+                            if (photo != null) {
+                                attachments.add(PhotoModel(url = photo.url))
+                            }
+                        }
+                        ATTACHMENTS_TYPE_VIDEO -> {
+                            attachment.video.image.forEach {
+                                if (it.width in (videoPreviewImageWidth + 1)..999) {
+                                    videoPreviewImageWidth = it.width
                                 }
                             }
+
+                            for (image in attachment.video.image) {
+                                if (videoPreviewImageWidth == image.width) {
+                                    videoPreviewImage = image.url
+                                    videoDuration = attachment.video.duration
+                                    videoOwnerID = attachment.video.owner_id.toString()
+                                    videoID = "${videoOwnerID}_${attachment.video.id}"
+
+                                }
+                            }
+
+                            if (
+                                videoPreviewImage != "" &&
+                                videoDuration != 0 &&
+                                videoID != "" &&
+                                videoOwnerID != ""){
+
+                                attachments.add(VideoModel(
+                                    videoPreviewImage = videoPreviewImage,
+                                    videoDuration = videoDuration,
+                                    videoOwnerID = videoOwnerID,
+                                    videoID = videoID
+                                ))
+
+                            }
+                        }
+                        ATTACHMENTS_TYPE_DOC -> {
+                            attachments.add(DocModel(url = attachment.doc.url))
                         }
                     }
                 }
             }
+
             if (isValid) {
                 newsFeedList.add(
                     FeedItemModel(
@@ -193,7 +203,8 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                         views = views,
                         ownerId = ownerId,
                         postId = postId,
-                        isFavorite = isFavorite
+                        isFavorite = isFavorite,
+                        startFrom = startFrom
                     ))
             }
         }

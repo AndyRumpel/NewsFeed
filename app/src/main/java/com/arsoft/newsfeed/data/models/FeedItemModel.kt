@@ -1,5 +1,7 @@
 package com.arsoft.newsfeed.data.models
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.arsoft.newsfeed.data.newsfeed.request.Comments
 import com.arsoft.newsfeed.data.newsfeed.request.Likes
 import com.arsoft.newsfeed.data.newsfeed.request.Reposts
@@ -17,5 +19,6 @@ data class FeedItemModel(
     val views: Views,
     val ownerId: Long,
     val postId: Long,
-    var isFavorite: Boolean
+    var isFavorite: Boolean,
+    var startFrom: String
 )

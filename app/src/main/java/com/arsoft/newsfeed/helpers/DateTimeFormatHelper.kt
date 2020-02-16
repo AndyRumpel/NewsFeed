@@ -16,7 +16,7 @@ class MyDateTimeFormatHelper {
             val deltaTime = currentTime - postDate
 
             val simpleTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val simpleDateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+            val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
             val deltaTimeInSeconds = deltaTime / ONE_SECOND
             val deltaTimeInMinutes = deltaTime / ONE_MINUTE
