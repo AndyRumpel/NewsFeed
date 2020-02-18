@@ -1,6 +1,7 @@
 package com.arsoft.newsfeed.data.comments.request
 
 import com.arsoft.newsfeed.data.models.IAttachment
+import com.arsoft.newsfeed.data.newsfeed.request.Photo
 
 data class CommentsResponse (
 
@@ -32,8 +33,22 @@ data class Items (
 
 data class Attachment(
     val type: String,
-    val stiker: Stiker,
+    val sticker: Sticker,
     val photo: Photo
+)
+
+data class Sticker(
+    val product_id: Int,
+    val sticker_id: Int,
+    val images: ArrayList<StickerImage>,
+    val images_with_background: ArrayList<StickerImage>,
+    val animation_url: String
+)
+
+data class StickerImage(
+    val url: String,
+    val width: Int,
+    val height: Int
 )
 
 data class Thread (

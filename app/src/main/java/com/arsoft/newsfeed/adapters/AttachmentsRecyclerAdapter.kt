@@ -1,15 +1,12 @@
 package com.arsoft.newsfeed.adapters
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Animatable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.DocModel
 import com.arsoft.newsfeed.data.models.IAttachment

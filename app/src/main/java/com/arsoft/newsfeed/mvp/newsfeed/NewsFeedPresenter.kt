@@ -1,12 +1,9 @@
 package com.arsoft.newsfeed.mvp.newsfeed
 
-import android.util.Log
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.DataProvider
-import com.arsoft.newsfeed.data.likes.repository.LikesRepository
-import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedService
 import kotlinx.coroutines.*
 import javax.inject.Inject

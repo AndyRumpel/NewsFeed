@@ -1,5 +1,7 @@
 package com.arsoft.newsfeed.data
 
+import com.arsoft.newsfeed.data.comments.repository.CommentsRepository
+import com.arsoft.newsfeed.data.comments.request.CommentsService
 import com.arsoft.newsfeed.data.likes.repository.LikesRepository
 import com.arsoft.newsfeed.data.likes.request.LikesService
 import com.arsoft.newsfeed.data.login.repository.LoginRepository
@@ -32,6 +34,12 @@ class DataProvider {
         fun provideLikes(): LikesRepository {
             return LikesRepository(
                 LikesService.create()
+            )
+        }
+
+        fun provideComments(): CommentsRepository {
+            return CommentsRepository(
+                CommentsService.create()
             )
         }
 

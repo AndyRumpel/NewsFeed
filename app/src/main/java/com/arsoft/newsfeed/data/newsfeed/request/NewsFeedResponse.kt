@@ -134,7 +134,7 @@ data class Items (
     val comments : Comments,
     val likes : Likes,
     val reposts : Reposts,
-    val views : Views,
+    val views : Views?,
     val is_favorite : Boolean,
     val post_id : Long,
     val push_subscription : Push_subscription,
