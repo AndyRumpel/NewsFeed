@@ -16,7 +16,8 @@ interface CommentsService {
         @Query(value = "owner_id") ownerId: Long,
         @Query(value = "post_id") post_id: Long,
         @Query(value = "access_token") accessToken: String,
-        @Query(value = "v") version: String
+        @Query(value = "v") version: String,
+        @Query(value = "extended") extended: Int
     ): Deferred<CommentsResponse>
 
     companion object Factory {

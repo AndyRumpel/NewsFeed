@@ -1,6 +1,5 @@
 package com.arsoft.newsfeed.data.newsfeed.repository
 
-import android.util.Log
 import com.arsoft.newsfeed.data.models.*
 import com.arsoft.newsfeed.data.newsfeed.request.*
 import kotlin.collections.ArrayList
@@ -120,7 +119,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.views) {
-                if (count == null) {
+                if (this?.count == null) {
                     views = com.arsoft.newsfeed.data.newsfeed.request.Views(
                         count = 0
                     )

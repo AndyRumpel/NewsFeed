@@ -6,18 +6,6 @@ data class NewsFeedResponse (
     val response: Response
 )
 
-//data class AttachmentPhoto (
-//    val type : String,
-//    val photo: Photo
-//): IAttachment
-//
-//data class AttachmentVideo (
-//    val type : String,
-//    val video: Video
-//): IAttachment
-//
-//interface IAttachment
-
 data class Attachment(
     val type: String,
     val photo: Photo,

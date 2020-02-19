@@ -10,8 +10,10 @@ import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
+import com.arsoft.newsfeed.helpers.Prefs
 import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
 import com.arsoft.newsfeed.mvp.comments.CommentsPresenter
 import com.arsoft.newsfeed.mvp.comments.CommentsView
@@ -60,7 +62,20 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         super.onViewCreated(view, savedInstanceState)
 
         val model: FeedItemModel = arguments!!.getParcelable("model")!!
+        setupPost(model = model)
 
+        val accessToken = Prefs(context = context!!).accessToken
+
+        presenter.loadCommetns(
+            accessToken = accessToken,
+            ownerId = model.ownerId,
+            postId = model.postId
+        )
+    }
+
+
+
+    private fun setupPost(model: FeedItemModel) {
         Glide.with(context!!)
             .load(model.avatar)
             .into(post_avatar)
@@ -74,21 +89,22 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         views_count_textview.text = model.views.count.toString()
 
         adapter = AttachmentsRecyclerAdapter(this)
-        comments_recycler_view.layoutManager = MultipleSpanGridLayoutManager(
+        attachments_recycler_view.layoutManager = MultipleSpanGridLayoutManager(
             context = context!!,
             spanCount = 4,
             items = model.attachments
         )
-        comments_recycler_view.setHasFixedSize(true)
-        comments_recycler_view.isNestedScrollingEnabled = false
-        comments_recycler_view.adapter = adapter
+        attachments_recycler_view.setHasFixedSize(true)
+        attachments_recycler_view.isNestedScrollingEnabled = false
+        attachments_recycler_view.adapter = adapter
         adapter.setupAttachments(attachments = model.attachments)
         adapter.notifyDataSetChanged()
     }
 
-
-
     // MARK --- View Implementation
+
+    override fun loadCommentsList(commentsList: ArrayList<CommentModel>) {
+    }
 
     override fun showCommentsList() {
         comments_recycler_view.visibility = View.VISIBLE
@@ -124,11 +140,11 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
     }
 
     override fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        presenter.addLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+        //presenter.addLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
     }
 
     override fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+        //presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
     }
 
     override fun onCommentsButtonClick(model: FeedItemModel) {

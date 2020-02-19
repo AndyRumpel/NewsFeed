@@ -8,9 +8,9 @@ import com.arsoft.newsfeed.data.newsfeed.request.Reposts
 import com.arsoft.newsfeed.data.newsfeed.request.Views
 
 data class FeedItemModel(
-    val avatar: String,
-    val sourceName: String,
-    val postText: String,
+    val avatar: String?,
+    val sourceName: String?,
+    val postText: String?,
     val attachments: ArrayList<IAttachment>,
     val date: Long,
     val likes: Likes,
@@ -20,5 +20,47 @@ data class FeedItemModel(
     val ownerId: Long,
     val postId: Long,
     var isFavorite: Boolean,
-    var startFrom: String
-)
+    var startFrom: String?
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        TODO("attachments"),
+        parcel.readLong(),
+        TODO("likes"),
+        TODO("comments"),
+        TODO("reposts"),
+        TODO("views"),
+        parcel.readLong(),
+        parcel.readLong(),
+        parcel.readByte() != 0.toByte(),
+        parcel.readString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(avatar)
+        parcel.writeString(sourceName)
+        parcel.writeString(postText)
+        parcel.writeLong(date)
+        parcel.writeLong(ownerId)
+        parcel.writeLong(postId)
+        parcel.writeByte(if (isFavorite) 1 else 0)
+        parcel.writeString(startFrom)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<FeedItemModel> {
+        override fun createFromParcel(parcel: Parcel): FeedItemModel {
+            return FeedItemModel(parcel)
+        }
+
+        override fun newArray(size: Int): Array<FeedItemModel?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

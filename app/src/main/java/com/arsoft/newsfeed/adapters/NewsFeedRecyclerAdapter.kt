@@ -53,7 +53,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         super.onViewAttachedToWindow(holder)
         val layoutPosition = holder.layoutPosition
         if (layoutPosition == this.itemCount - 10) {
-            loadMoreOwner.loadMore(newsFeedList[layoutPosition].startFrom)
+            loadMoreOwner.loadMore(newsFeedList[layoutPosition].startFrom!!)
         }
     }
 
@@ -97,7 +97,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
             adapter.notifyDataSetChanged()
 
 
-            if (model.avatar.isNotEmpty()) {
+            if (model.avatar!!.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(model.avatar)
                     .into(avatarImg)
@@ -170,6 +170,10 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
                     likesButton.setImageResource(R.drawable.ic_favorite_border)
                     likesCountTextView.setTextColor(Color.WHITE)
                 }
+            }
+
+            commentsButton.setOnClickListener{
+                onNewsFeedItemClickListener.onCommentsButtonClick(model = model)
             }
         }
 
