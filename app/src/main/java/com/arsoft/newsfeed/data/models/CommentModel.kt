@@ -5,5 +5,6 @@ data class CommentModel(
     val avatar: String,
     val date: Long,
     val text: String,
-    val attachments: ArrayList<IAttachment>
+    val attachments: ArrayList<IAttachment>,
+    val thread: ArrayList<CommentModel>
 )

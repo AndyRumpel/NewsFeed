@@ -53,17 +53,16 @@
         app:layout_constraintTop_toBottomOf="@+id/comment_text_textview"
         tools:text="Just now" />
 
-<!--    <View-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0.1dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:layout_marginRight="8dp"-->
-<!--        android:background="@android:color/white"-->
-<!--        android:alpha="0.4"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toEndOf="@+id/comment_avatar_imageview"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/comment_date_textview" />-->
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/thread_comments_recycler"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/comment_date_textview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

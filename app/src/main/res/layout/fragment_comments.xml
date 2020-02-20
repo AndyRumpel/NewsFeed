@@ -2,6 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/windowBackgroundLite"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -25,23 +26,23 @@
             android:id="@+id/post_source_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="76dp"
-            android:layout_marginLeft="76dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/post_avatar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/post_avatar"
-            app:layout_constraintVertical_bias="0.25" />
+            app:layout_constraintStart_toEndOf="@+id/post_avatar"
+            app:layout_constraintTop_toTopOf="@+id/post_avatar" />
 
         <TextView
             android:id="@+id/post_date_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="76dp"
-            android:layout_marginLeft="76dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-thin"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/post_avatar"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/post_avatar"
             app:layout_constraintTop_toBottomOf="@+id/post_source_name" />
 
         <TextView
@@ -152,6 +153,7 @@
             app:layout_constraintTop_toBottomOf="@+id/views_imageview" />
 
         <View
+            android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="0.1dp"
             android:layout_marginStart="16dp"
@@ -169,10 +171,11 @@
             android:id="@+id/comments_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reposts_count_textview" />
+            app:layout_constraintTop_toBottomOf="@+id/view" />
 
         <com.github.rahatarmanahmed.cpv.CircularProgressView
             app:layout_constraintBottom_toBottomOf="parent"
@@ -196,6 +199,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/reposts_count_textview"/>
 
+        <EditText
+            android:id="@+id/comment_edittext"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/textinput_size"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:hint="@string/comment_send_hint"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/tab_indicator_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/comment_send_imagebutton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/comments_recycler_view" />
+
+        <ImageButton
+            android:id="@+id/comment_send_imagebutton"
+            android:layout_width="@dimen/send_comment_imagebutton_size"
+            android:layout_height="@dimen/send_comment_imagebutton_size"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/comment_edittext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/comment_edittext"
+            app:srcCompat="@drawable/ic_send_white" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

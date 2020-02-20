@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.CommentModel
@@ -13,7 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CommetnsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CommentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var commentsList = ArrayList<CommentModel>()
 
@@ -42,6 +43,9 @@ class CommetnsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val nameTextView = itemView.findViewById<TextView>(R.id.comment_name_textview)
         private val commentTextTextView = itemView.findViewById<TextView>(R.id.comment_text_textview)
         private val dateTextView = itemView.findViewById<TextView>(R.id.comment_date_textview)
+        private val threadCommentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.thread_comments_recycler)
+
+        private val adapter = CommentsRecyclerAdapter()
 
         fun bind(model: CommentModel) {
             Glide.with(itemView.context)
@@ -52,6 +56,12 @@ class CommetnsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             val currentTime = Calendar.getInstance().timeInMillis
             dateTextView.text = MyDateTimeFormatHelper.timeFormat(postDate = model.date * 1000, currentTime = currentTime)
+
+            threadCommentsRecyclerView.adapter = adapter
+            threadCommentsRecyclerView.layoutManager = LinearLayoutManager(itemView.context, RecyclerView.VERTICAL, false)
+            adapter.setupComments(model.thread)
+            adapter.notifyDataSetChanged()
+
         }
     }
 }

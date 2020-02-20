@@ -10,7 +10,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
-import com.arsoft.newsfeed.adapters.CommetnsRecyclerAdapter
+import com.arsoft.newsfeed.adapters.CommentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.models.CommentModel
@@ -52,7 +52,7 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
     }
 
     private lateinit var attachmentsRecyclerAdapter: AttachmentsRecyclerAdapter
-    private lateinit var commentsAdapter: CommetnsRecyclerAdapter
+    private lateinit var commentsAdapter: CommentsRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,9 +75,10 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
             ownerId = model.ownerId,
             postId = model.postId
         )
-        commentsAdapter = CommetnsRecyclerAdapter()
+        commentsAdapter = CommentsRecyclerAdapter()
         comments_recycler_view.adapter = commentsAdapter
         comments_recycler_view.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        comments_recycler_view.isNestedScrollingEnabled = false
     }
 
 
@@ -90,9 +91,13 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         val currentTime = Calendar.getInstance().timeInMillis
         post_date_time.text = MyDateTimeFormatHelper.timeFormat(postDate = model.date * 1000, currentTime = currentTime)
         post_text_view.text = model.postText
-        likes_count_textview.text = model.likes.count.toString()
-        comments_count_textview.text = model.comments.count.toString()
-        reposts_count_textview.text = model.reposts.count.toString()
+
+        with(model) {
+            likes_count_textview.text =  if(likes.count > 0) likes.count.toString() else ""
+            comments_count_textview.text = if(comments.count > 0) comments.count.toString() else ""
+            reposts_count_textview.text = if(reposts.count > 0) reposts.count.toString() else ""
+        }
+
         views_count_textview.text = model.views.count.toString()
 
         attachmentsRecyclerAdapter = AttachmentsRecyclerAdapter(this)

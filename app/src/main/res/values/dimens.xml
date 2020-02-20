@@ -11,4 +11,5 @@
     <dimen name="attachments_photo_corner_radius">5dp</dimen>
     <dimen name="post_icons_width">20dp</dimen>
     <dimen name="post_icons_height">20dp</dimen>
+    <dimen name="send_comment_imagebutton_size">36dp</dimen>
 </resources>

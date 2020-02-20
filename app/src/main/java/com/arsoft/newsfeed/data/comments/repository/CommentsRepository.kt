@@ -11,10 +11,14 @@ class CommentsRepository(private val apiService: CommentsService) {
 
     private val VERSION = "5.103"
     private val EXTENDED_RESPONSE = 1
+    private val NEED_LIKES = 1
+    private val THREAD_ITEMS_COUNT = 10
+    private val COMMENTS_COUNT = 100
 
     private val ATTACHMENTS_TYPE_PHOTO = "photo"
     private val ATTACHMENTS_TYPE_VIDEO = "video"
     private val ATTACHMENTS_TYPE_STICKER = "sticker"
+
 
     suspend fun loadComments(ownerId: Long, postId: Long, accessToken: String): ArrayList<CommentModel>{
         val result = apiService.getComments(
@@ -22,7 +26,10 @@ class CommentsRepository(private val apiService: CommentsService) {
             accessToken = accessToken,
             post_id = postId,
             version = VERSION,
-            extended = EXTENDED_RESPONSE
+            extended = EXTENDED_RESPONSE,
+            needLikes = NEED_LIKES,
+            threadItemsCount = THREAD_ITEMS_COUNT,
+            count = COMMENTS_COUNT
         ).await()
 
         return parseData(result)
@@ -36,6 +43,10 @@ class CommentsRepository(private val apiService: CommentsService) {
         val attachments = ArrayList<IAttachment>()
         val sourceProfiles = ArrayList<SourceModel>()
         val commentsList = ArrayList<CommentModel>()
+        var threadComments = ArrayList<CommentModel>()
+        var threadCommentName = ""
+        var threadCommentAvatar = ""
+        var threadCommentAttachments = ArrayList<IAttachment>()
 
         for (source in result.response.profiles) {
             sourceProfiles.add(
@@ -63,8 +74,8 @@ class CommentsRepository(private val apiService: CommentsService) {
                     name = source.name
                     avatar = source.avatar
                 }
-                Log.e("NAME", "${source.name}:  ${source.avatar}")
             }
+
             text = item.text
             date = item.date
 
@@ -89,7 +100,50 @@ class CommentsRepository(private val apiService: CommentsService) {
                 }
             }
 
+            threadComments = ArrayList()
+            threadCommentAttachments = ArrayList()
 
+            if (item.thread.count > 0) {
+                for (thread in item.thread.items) {
+                    for (source in sourceProfiles) {
+                        if (source.id == thread.from_id) {
+                            threadCommentName = source.name
+                            threadCommentAvatar = source.avatar
+                        }
+                    }
+                    if (!thread.attachments.isNullOrEmpty()) {
+                        for (attachment in thread.attachments) {
+                            when (attachment.type) {
+                                ATTACHMENTS_TYPE_STICKER -> {
+                                    threadCommentAttachments.add(
+                                        StickerModel(
+                                            attachment.sticker.images[3].url,
+                                            attachment.sticker.images_with_background[3].url
+                                        )
+                                    )
+                                }
+                                ATTACHMENTS_TYPE_PHOTO -> {
+                                    val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+                                    if (photo != null) {
+                                        threadCommentAttachments.add(PhotoModel(url = photo.url))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    threadComments.add(
+                        CommentModel(
+                            name = threadCommentName,
+                            avatar = threadCommentAvatar,
+                            date = thread.date,
+                            text = thread.text,
+                            attachments = threadCommentAttachments,
+                            thread = ArrayList()
+                        )
+                    )
+                }
+            }
 
             commentsList.add(
                 CommentModel(
@@ -97,11 +151,21 @@ class CommentsRepository(private val apiService: CommentsService) {
                     avatar = avatar,
                     date = date,
                     text = text,
-                    attachments = attachments
+                    attachments = attachments,
+                    thread = threadComments
                 )
             )
         }
 
+        var count = 0
+        result.response.items.forEach {
+            Log.e("comments", count++.toString())
+            if (it.thread.count > 0) {
+                it.thread.items.forEach {
+                    Log.e("threads", count++.toString())
+                }
+            }
+        }
 
         return commentsList
     }

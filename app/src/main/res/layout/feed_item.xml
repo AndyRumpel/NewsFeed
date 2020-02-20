@@ -25,23 +25,23 @@
             android:id="@+id/post_source_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="76dp"
-            android:layout_marginLeft="76dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/post_avatar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/post_avatar"
-            app:layout_constraintVertical_bias="0.25" />
+            app:layout_constraintStart_toEndOf="@+id/post_avatar"
+            app:layout_constraintTop_toTopOf="@+id/post_avatar" />
 
         <TextView
             android:id="@+id/post_date_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="76dp"
-            android:layout_marginLeft="76dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:fontFamily="sans-serif-thin"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/post_avatar"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/post_avatar"
             app:layout_constraintTop_toBottomOf="@+id/post_source_name" />
 
 

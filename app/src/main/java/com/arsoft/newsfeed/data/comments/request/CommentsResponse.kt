@@ -1,6 +1,6 @@
 package com.arsoft.newsfeed.data.comments.request
 
-import com.arsoft.newsfeed.data.newsfeed.request.Photo
+import com.arsoft.newsfeed.data.newsfeed.request.Sizes
 import com.arsoft.newsfeed.data.newsfeed.request.Video
 
 data class CommentsResponse (
@@ -40,6 +40,18 @@ data class Attachment(
     val video: Video
 )
 
+data class Photo (
+
+    val id : Int,
+    val album_id : Int,
+    val owner_id : Int,
+    val user_id : Int,
+    val sizes : List<Sizes>,
+    val text : String,
+    val date : Int,
+    val access_access_key : String
+)
+
 data class Sticker(
     val product_id: Int,
     val sticker_id: Int,
@@ -57,11 +69,13 @@ data class StickerImage(
 data class Thread (
 
     val count : Int,
-    val items : List<String>,
+    val items : List<Items>,
     val can_post : Boolean,
     val show_reply_button : Boolean,
     val groups_can_post : Boolean
 )
+
+
 
 data class Profiles (
 
