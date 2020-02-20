@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
+import com.arsoft.newsfeed.adapters.CommetnsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.models.CommentModel
@@ -48,7 +51,8 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         NewsFeedApplication.INSTANCE.getAppComponent()!!.inject(this)
     }
 
-    private lateinit var adapter: AttachmentsRecyclerAdapter
+    private lateinit var attachmentsRecyclerAdapter: AttachmentsRecyclerAdapter
+    private lateinit var commentsAdapter: CommetnsRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,6 +75,9 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
             ownerId = model.ownerId,
             postId = model.postId
         )
+        commentsAdapter = CommetnsRecyclerAdapter()
+        comments_recycler_view.adapter = commentsAdapter
+        comments_recycler_view.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
     }
 
 
@@ -88,7 +95,7 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         reposts_count_textview.text = model.reposts.count.toString()
         views_count_textview.text = model.views.count.toString()
 
-        adapter = AttachmentsRecyclerAdapter(this)
+        attachmentsRecyclerAdapter = AttachmentsRecyclerAdapter(this)
         attachments_recycler_view.layoutManager = MultipleSpanGridLayoutManager(
             context = context!!,
             spanCount = 4,
@@ -96,14 +103,16 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         )
         attachments_recycler_view.setHasFixedSize(true)
         attachments_recycler_view.isNestedScrollingEnabled = false
-        attachments_recycler_view.adapter = adapter
-        adapter.setupAttachments(attachments = model.attachments)
-        adapter.notifyDataSetChanged()
+        attachments_recycler_view.adapter = attachmentsRecyclerAdapter
+        attachmentsRecyclerAdapter.setupAttachments(attachments = model.attachments)
+        attachmentsRecyclerAdapter.notifyDataSetChanged()
     }
 
     // MARK --- View Implementation
 
     override fun loadCommentsList(commentsList: ArrayList<CommentModel>) {
+        commentsAdapter.setupComments(commentsList)
+        commentsAdapter.notifyDataSetChanged()
     }
 
     override fun showCommentsList() {

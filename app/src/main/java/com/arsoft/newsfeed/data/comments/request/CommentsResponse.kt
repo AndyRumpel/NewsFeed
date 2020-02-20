@@ -22,8 +22,8 @@ data class Response (
 
 data class Items (
 
-    val id : Int,
-    val from_id : Int,
+    val id : Long,
+    val from_id : Long,
     val post_id : Int,
     val owner_id : Long,
     val parents_stack : List<String>,

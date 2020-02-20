@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/comment_avatar_imageview"
+        android:layout_width="@dimen/post_avatar_size"
+        android:layout_height="@dimen/post_avatar_size"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/comment_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/comment_avatar_imageview"
+        app:layout_constraintTop_toTopOf="@+id/comment_avatar_imageview"
+        tools:text="Andy Rumpel" />
+
+    <TextView
+        android:id="@+id/comment_text_textview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/comment_avatar_imageview"
+        app:layout_constraintTop_toBottomOf="@+id/comment_name_textview"
+        tools:text="Hey this is not a lorem ipsum text" />
+
+    <TextView
+        android:id="@+id/comment_date_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/comment_avatar_imageview"
+        app:layout_constraintTop_toBottomOf="@+id/comment_text_textview"
+        tools:text="Just now" />
+
+<!--    <View-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0.1dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:layout_marginRight="8dp"-->
+<!--        android:background="@android:color/white"-->
+<!--        android:alpha="0.4"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/comment_avatar_imageview"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/comment_date_textview" />-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

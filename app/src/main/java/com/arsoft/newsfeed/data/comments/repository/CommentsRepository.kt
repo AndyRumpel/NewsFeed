@@ -1,5 +1,6 @@
 package com.arsoft.newsfeed.data.comments.repository
 
+import android.util.Log
 import com.arsoft.newsfeed.data.comments.request.Attachment
 import com.arsoft.newsfeed.data.comments.request.CommentsResponse
 import com.arsoft.newsfeed.data.comments.request.CommentsService
@@ -58,10 +59,11 @@ class CommentsRepository(private val apiService: CommentsService) {
 
         for (item in result.response.items) {
             for (source in sourceProfiles) {
-                if(abs(item.owner_id) == source.id) {
+                if(item.from_id == source.id) {
                     name = source.name
                     avatar = source.avatar
                 }
+                Log.e("NAME", "${source.name}:  ${source.avatar}")
             }
             text = item.text
             date = item.date
@@ -86,6 +88,8 @@ class CommentsRepository(private val apiService: CommentsService) {
                     }
                 }
             }
+
+
 
             commentsList.add(
                 CommentModel(
