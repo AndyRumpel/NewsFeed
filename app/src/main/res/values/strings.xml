@@ -13,4 +13,6 @@
     <string name="hours_ago">часов назад</string>
     <string name="nothing_to_show">Нет коментариев</string>
     <string name="comment_send_hint">Оставить коментарий</string>
+    <string name="reply">Ответить</string>
+    <string name="like_it">Мне нравится</string>
 </resources>

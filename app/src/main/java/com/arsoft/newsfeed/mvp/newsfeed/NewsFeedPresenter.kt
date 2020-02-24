@@ -54,20 +54,20 @@ class NewsFeedPresenter: MvpPresenter<NewsFeedView>() {
         }
     }
 
-    fun addLike(ownerId: Long, itemId: Long, accessToken: String, position: Int) {
+    fun addLike(type: String, ownerId: Long, itemId: Long, accessToken: String, viewItemId: Long) {
         newsFeedJob = GlobalScope.launch {
-            val likes = likesRepository.addLike(ownerId = ownerId, itemId = itemId, accessToken = accessToken)
+            val likes = likesRepository.addLike(type = type, ownerId = ownerId, itemId = itemId, accessToken = accessToken)
             withContext(Dispatchers.Main){
-                viewState.updateLikesCount(likes = likes, position =  position)
+                viewState.updateLikesCount(likes = likes, viewItemId =  viewItemId)
             }
         }
     }
 
-    fun deleteLike(ownerId: Long, itemId: Long, accessToken: String, position: Int) {
+    fun deleteLike(type: String, ownerId: Long, itemId: Long, accessToken: String, viewItemId: Long) {
         newsFeedJob = GlobalScope.launch {
-            val likes = likesRepository.deleteLike(ownerId = ownerId, itemId = itemId, accessToken = accessToken)
+            val likes = likesRepository.deleteLike(type = type, ownerId = ownerId, itemId = itemId, accessToken = accessToken)
             withContext(Dispatchers.Main) {
-                viewState.updateLikesCount(likes = likes, position = position)
+                viewState.updateLikesCount(likes = likes, viewItemId = viewItemId)
             }
         }
     }

@@ -47,6 +47,7 @@ class CommentsRepository(private val apiService: CommentsService) {
         var threadCommentName = ""
         var threadCommentAvatar = ""
         var threadCommentAttachments = ArrayList<IAttachment>()
+        var isFavorite: Boolean
 
         for (source in result.response.profiles) {
             sourceProfiles.add(
@@ -104,15 +105,15 @@ class CommentsRepository(private val apiService: CommentsService) {
             threadCommentAttachments = ArrayList()
 
             if (item.thread.count > 0) {
-                for (thread in item.thread.items) {
+                for (threadItem in item.thread.items) {
                     for (source in sourceProfiles) {
-                        if (source.id == thread.from_id) {
+                        if (source.id == threadItem.from_id) {
                             threadCommentName = source.name
                             threadCommentAvatar = source.avatar
                         }
                     }
-                    if (!thread.attachments.isNullOrEmpty()) {
-                        for (attachment in thread.attachments) {
+                    if (!threadItem.attachments.isNullOrEmpty()) {
+                        for (attachment in threadItem.attachments) {
                             when (attachment.type) {
                                 ATTACHMENTS_TYPE_STICKER -> {
                                     threadCommentAttachments.add(
@@ -132,18 +133,27 @@ class CommentsRepository(private val apiService: CommentsService) {
                         }
                     }
 
+                    isFavorite = threadItem.likes.user_likes != 0
+
                     threadComments.add(
                         CommentModel(
                             name = threadCommentName,
                             avatar = threadCommentAvatar,
-                            date = thread.date,
-                            text = thread.text,
+                            date = threadItem.date,
+                            text = threadItem.text,
                             attachments = threadCommentAttachments,
-                            thread = ArrayList()
+                            thread = ArrayList(),
+                            likesCount = threadItem.likes.count,
+                            userLikes = threadItem.likes.user_likes,
+                            ownerId = threadItem.owner_id,
+                            itemId = threadItem.id,
+                            isFavorite = isFavorite
                         )
                     )
                 }
             }
+
+            isFavorite = item.likes.user_likes != 0
 
             commentsList.add(
                 CommentModel(
@@ -152,19 +162,14 @@ class CommentsRepository(private val apiService: CommentsService) {
                     date = date,
                     text = text,
                     attachments = attachments,
-                    thread = threadComments
+                    thread = threadComments,
+                    likesCount = item.likes.count,
+                    userLikes = item.likes.user_likes,
+                    ownerId = item.owner_id,
+                    itemId = item.id,
+                    isFavorite = isFavorite
                 )
             )
-        }
-
-        var count = 0
-        result.response.items.forEach {
-            Log.e("comments", count++.toString())
-            if (it.thread.count > 0) {
-                it.thread.items.forEach {
-                    Log.e("threads", count++.toString())
-                }
-            }
         }
 
         return commentsList

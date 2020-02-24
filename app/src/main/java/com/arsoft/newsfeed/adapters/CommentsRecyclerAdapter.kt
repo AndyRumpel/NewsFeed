@@ -1,9 +1,14 @@
 package com.arsoft.newsfeed.adapters
 
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
@@ -14,7 +19,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CommentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var commentsList = ArrayList<CommentModel>()
 
@@ -26,28 +31,57 @@ class CommentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.comment_item, parent,false)
-        return CommentsViewHolder(itemView)
+        return CommentsViewHolder(itemView, onCommentClickListener)
     }
 
     override fun getItemCount(): Int {
         return commentsList.count()
     }
 
+    override fun getItemId(position: Int): Long {
+        return commentsList[position].itemId
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as CommentsViewHolder).bind(commentsList[position])
     }
 
-    class CommentsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class CommentsViewHolder(itemView: View, private val onCommentClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
 
-        private val avatarCircleImageView = itemView.findViewById<CircleImageView>(R.id.comment_avatar_imageview)
+        private val avatarCircleImageView =
+            itemView.findViewById<CircleImageView>(R.id.comment_avatar_imageview)
         private val nameTextView = itemView.findViewById<TextView>(R.id.comment_name_textview)
-        private val commentTextTextView = itemView.findViewById<TextView>(R.id.comment_text_textview)
+        private val commentTextTextView =
+            itemView.findViewById<TextView>(R.id.comment_text_textview)
         private val dateTextView = itemView.findViewById<TextView>(R.id.comment_date_textview)
-        private val threadCommentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.thread_comments_recycler)
+        private val threadCommentsRecyclerView =
+            itemView.findViewById<RecyclerView>(R.id.thread_comments_recycler)
+        private val commentReplyButton =
+            itemView.findViewById<LinearLayout>(R.id.comment_reply_button)
+        private val commentLikeButton =
+            itemView.findViewById<LinearLayout>(R.id.comment_like_button)
+        private val commentLikeItTextView =
+            itemView.findViewById<TextView>(R.id.comment_likeit_textview)
+        private val commentLikesCountTextView =
+            itemView.findViewById<TextView>(R.id.comment_likes_count)
+        private val commentLikeImageView =
+            itemView.findViewById<ImageView>(R.id.comment_icon_imageview)
 
-        private val adapter = CommentsRecyclerAdapter()
+
+        private val adapter = CommentsRecyclerAdapter(onCommentClickListener)
+        private val TYPE_COMMENT = "comment"
 
         fun bind(model: CommentModel) {
+
+
+
+            adapter.setHasStableIds(true)
+            threadCommentsRecyclerView.adapter = adapter
+            threadCommentsRecyclerView.layoutManager =
+                LinearLayoutManager(itemView.context, RecyclerView.VERTICAL, false)
+            adapter.setupComments(model.thread)
+            adapter.notifyDataSetChanged()
+
             Glide.with(itemView.context)
                 .load(model.avatar)
                 .into(avatarCircleImageView)
@@ -55,13 +89,64 @@ class CommentsRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             commentTextTextView.text = model.text
 
             val currentTime = Calendar.getInstance().timeInMillis
-            dateTextView.text = MyDateTimeFormatHelper.timeFormat(postDate = model.date * 1000, currentTime = currentTime)
+            dateTextView.text = MyDateTimeFormatHelper.timeFormat(
+                postDate = model.date * 1000,
+                currentTime = currentTime
+            )
 
-            threadCommentsRecyclerView.adapter = adapter
-            threadCommentsRecyclerView.layoutManager = LinearLayoutManager(itemView.context, RecyclerView.VERTICAL, false)
-            adapter.setupComments(model.thread)
-            adapter.notifyDataSetChanged()
+            if (model.userLikes != 0) {
+                changeLikeButtonColorToAdded()
+            } else {
+                changeLikeButtonColorToDeleted()
+            }
 
+            if (model.likesCount > 0) {
+                commentLikesCountTextView.text = model.likesCount.toString()
+            } else {
+                commentLikesCountTextView.text = ""
+            }
+
+            commentLikeButton.setOnClickListener {
+                if (!model.isFavorite) {
+                    onCommentClickListener.onAddLikeClick(
+                        type = TYPE_COMMENT,
+                        ownerId = model.ownerId,
+                        itemId = model.itemId,
+                        viewItemId = itemId
+                    )
+                    Log.e("ITEMID", itemId.toString())
+                    model.isFavorite = true
+                    changeLikeButtonColorToAdded()
+                } else {
+                    onCommentClickListener.onDeleteLikeClick(
+                        type = TYPE_COMMENT,
+                        ownerId = model.ownerId,
+                        itemId = model.itemId,
+                        viewItemId = itemId
+                    )
+                    Log.e("ITEMID", itemId.toString())
+                    model.isFavorite = false
+                    changeLikeButtonColorToDeleted()
+                }
+            }
+
+            commentReplyButton.setOnClickListener {
+                onCommentClickListener.onReplyButtonClick(model = model, itemId = itemId)
+            }
+
+
+        }
+
+        private fun changeLikeButtonColorToAdded() {
+            commentLikeImageView.setImageResource(R.drawable.ic_favorite)
+            commentLikeItTextView.setTextColor(itemView.resources.getColor(R.color.colorAccent))
+            commentLikesCountTextView.setTextColor(itemView.resources.getColor(R.color.colorAccent))
+        }
+
+        private fun changeLikeButtonColorToDeleted() {
+            commentLikeImageView.setImageResource(R.drawable.ic_favorite_border)
+            commentLikeItTextView.setTextColor(Color.WHITE)
+            commentLikesCountTextView.setTextColor(Color.WHITE)
         }
     }
 }

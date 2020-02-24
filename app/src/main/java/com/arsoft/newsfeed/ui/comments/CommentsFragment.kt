@@ -1,9 +1,14 @@
 package com.arsoft.newsfeed.ui.comments
 
+import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
@@ -13,6 +18,7 @@ import com.arsoft.newsfeed.adapters.AttachmentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.CommentsRecyclerAdapter
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
+import com.arsoft.newsfeed.data.likes.request.LikesResponse
 import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
@@ -22,11 +28,13 @@ import com.arsoft.newsfeed.mvp.comments.CommentsPresenter
 import com.arsoft.newsfeed.mvp.comments.CommentsView
 import com.arsoft.newsfeed.navigation.screens.Screens
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.comment_item.view.*
 import kotlinx.android.synthetic.main.fragment_comments.*
 import kotlinx.android.synthetic.main.fragment_comments.post_avatar
 import kotlinx.android.synthetic.main.fragment_comments.post_date_time
 import kotlinx.android.synthetic.main.fragment_comments.post_source_name
 import ru.terrakok.cicerone.Router
+import java.lang.Exception
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
@@ -53,6 +61,7 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
 
     private lateinit var attachmentsRecyclerAdapter: AttachmentsRecyclerAdapter
     private lateinit var commentsAdapter: CommentsRecyclerAdapter
+    private lateinit var accessToken: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,14 +77,16 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         val model: FeedItemModel = arguments!!.getParcelable("model")!!
         setupPost(model = model)
 
-        val accessToken = Prefs(context = context!!).accessToken
+        accessToken = Prefs(context = context!!).accessToken
 
         presenter.loadCommetns(
             accessToken = accessToken,
             ownerId = model.ownerId,
             postId = model.postId
         )
-        commentsAdapter = CommentsRecyclerAdapter()
+
+        commentsAdapter = CommentsRecyclerAdapter(this)
+        commentsAdapter.setHasStableIds(true)
         comments_recycler_view.adapter = commentsAdapter
         comments_recycler_view.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         comments_recycler_view.isNestedScrollingEnabled = false
@@ -144,6 +155,43 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         comments_cpv.visibility = View.INVISIBLE
     }
 
+    override fun updatePostLikesCount(likes: LikesResponse) {
+        with(likes_count_textview){
+            if (likes.response.likes == 0) {
+                text = ""
+            } else {
+                text = likes.response.likes.toString()
+            }
+        }
+    }
+
+    override fun updateCommentLikesCount(likes: LikesResponse, viewItemId: Long) {
+        if (comments_recycler_view.findViewHolderForItemId(viewItemId) != null) {
+            with(comments_recycler_view.findViewHolderForItemId(viewItemId).itemView.comment_likes_count) {
+                if (likes.response.likes == 0) {
+                    text = ""
+                } else {
+                    text = likes.response.likes.toString()
+                }
+            }
+        } else {
+            comments_recycler_view.forEach {
+                if (it.thread_comments_recycler.findViewHolderForItemId(viewItemId) != null) {
+                    with(it.thread_comments_recycler.findViewHolderForItemId(viewItemId).itemView.comment_likes_count) {
+                        if (likes.response.likes == 0) {
+                            text = ""
+                        } else {
+                            text = likes.response.likes.toString()
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+    }
+
     // OnItemClickListener implementation
     override fun onPhotoClick(photoURLs: ArrayList<String?>, position: Int) {
         router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
@@ -153,15 +201,34 @@ class CommentsFragment: MvpAppCompatFragment(), CommentsView, NewsFeedRecyclerAd
         router.navigateTo(Screens.VideoPlayerScreen(videoID = videoID, videoOwnerID = videoOwnerID))
     }
 
-    override fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        //presenter.addLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    override fun onAddLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long) {
+        presenter.addLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = accessToken)
     }
 
-    override fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        //presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    override fun onDeleteLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long) {
+        presenter.deleteLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = accessToken)
     }
 
     override fun onCommentsButtonClick(model: FeedItemModel) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onReplyButtonClick(model: CommentModel, itemId: Long) {
+        comment_edittext.requestFocus()
+        comment_edittext.let {
+            val inputmethodManager: InputMethodManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputmethodManager.showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
+        }
+        var position = 0
+        if (comments_recycler_view.findViewHolderForItemId(itemId) != null) {
+            position = comments_recycler_view.findViewHolderForItemId(itemId).layoutPosition
+        } else {
+            comments_recycler_view.forEach {
+                if (it.thread_comments_recycler.findViewHolderForItemId(itemId) != null) {
+                    position = it.thread_comments_recycler.findViewHolderForItemId(itemId).layoutPosition
+                }
+            }
+        }
+        comments_recycler_view.smoothScrollToPosition(position)
     }
 }

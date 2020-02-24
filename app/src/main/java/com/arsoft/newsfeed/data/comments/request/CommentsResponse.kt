@@ -29,8 +29,15 @@ data class Items (
     val parents_stack : List<String>,
     val date : Long,
     val text : String,
+    val likes: Likes,
     val thread : Thread,
     val attachments: ArrayList<Attachment>
+)
+
+data class Likes(
+    val count: Int,
+    val user_likes: Int,
+    val can_like: Int
 )
 
 data class Attachment(

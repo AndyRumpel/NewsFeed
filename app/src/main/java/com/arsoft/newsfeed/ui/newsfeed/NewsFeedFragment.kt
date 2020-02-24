@@ -10,6 +10,7 @@ import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.likes.request.LikesResponse
+import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.recycler.NewsFeedItemDecoration
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
@@ -67,6 +68,7 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
 
         adapter = NewsFeedRecyclerAdapter(onNewsFeedItemClickListener = this)
         adapter.setLoadMoreCallback(this)
+        adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(NewsFeedItemDecoration(20))
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -139,8 +141,8 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
     }
 
 
-    override fun updateLikesCount(likes: LikesResponse, position: Int) {
-        with(recyclerView.findViewHolderForLayoutPosition(position)!!.itemView.likes_count_textview){
+    override fun updateLikesCount(likes: LikesResponse, viewItemId: Long) {
+        with(recyclerView.findViewHolderForItemId(viewItemId)!!.itemView.likes_count_textview){
             if (likes.response.likes == 0) {
                 text = ""
             } else {
@@ -162,16 +164,20 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
         router.navigateTo(Screens.VideoPlayerScreen(videoID = videoID, videoOwnerID = videoOwnerID))
     }
 
-    override fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        presenter.addLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    override fun onAddLikeClick(type: String ,ownerId: Long, itemId: Long, viewItemId: Long) {
+        presenter.addLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = arguments!!.getString("access_token")!!)
     }
 
-    override fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int) {
-        presenter.deleteLike(ownerId = ownerId, itemId = itemId, position = position, accessToken = arguments!!.getString("access_token")!!)
+    override fun onDeleteLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long) {
+        presenter.deleteLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = arguments!!.getString("access_token")!!)
     }
 
     override fun onCommentsButtonClick(model: FeedItemModel) {
         router.navigateTo(Screens.CommentsScreen(model = model))
+    }
+
+    override fun onReplyButtonClick(model: CommentModel, itemId: Long) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

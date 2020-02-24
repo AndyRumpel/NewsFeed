@@ -6,5 +6,10 @@ data class CommentModel(
     val date: Long,
     val text: String,
     val attachments: ArrayList<IAttachment>,
-    val thread: ArrayList<CommentModel>
+    val thread: ArrayList<CommentModel>,
+    val likesCount: Int,
+    val userLikes: Int,
+    val ownerId: Long,
+    val itemId: Long,
+    var isFavorite: Boolean
 )

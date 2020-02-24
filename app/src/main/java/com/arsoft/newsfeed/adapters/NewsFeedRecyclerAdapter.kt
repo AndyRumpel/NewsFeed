@@ -1,6 +1,7 @@
 package com.arsoft.newsfeed.adapters
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
+import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
@@ -49,6 +51,10 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         this.loadMoreOwner = loadMoreOwner
     }
 
+    override fun getItemId(position: Int): Long {
+        return newsFeedList[position].postId
+    }
+
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         super.onViewAttachedToWindow(holder)
         val layoutPosition = holder.layoutPosition
@@ -79,9 +85,11 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         private val adapter = AttachmentsRecyclerAdapter(onNewsFeedItemClickListener)
         private lateinit var layoutManager: MultipleSpanGridLayoutManager
         private var currentTime = 0L
+        private val TYPE_POST = "post"
 
 
         fun bind(model: FeedItemModel) {
+            itemView.tag = model.postId
 
             layoutManager =
                 MultipleSpanGridLayoutManager(
@@ -149,9 +157,10 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
             likesButton.setOnClickListener {
                 if (!model.isFavorite) {
                     onNewsFeedItemClickListener.onAddLikeClick(
+                        type = TYPE_POST,
                         ownerId = model.ownerId,
                         itemId = model.postId,
-                        position = adapterPosition)
+                        viewItemId = itemId)
                     model.isFavorite = true
                     likesButton.setImageResource(R.drawable.ic_favorite)
                     if (android.os.Build.VERSION.SDK_INT >= 23) {
@@ -162,9 +171,10 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
 
                 } else {
                     onNewsFeedItemClickListener.onDeleteLikeClick(
+                        type = TYPE_POST,
                         ownerId = model.ownerId,
                         itemId = model.postId,
-                        position = adapterPosition
+                        viewItemId = itemId
                     )
                     model.isFavorite = false
                     likesButton.setImageResource(R.drawable.ic_favorite_border)
@@ -180,9 +190,10 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         interface OnNewsFeedItemClickListener{
             fun onPhotoClick(photoURLs: ArrayList<String?> ,position: Int)
             fun onVideoClick(videoID: String, videoOwnerID: String)
-            fun onAddLikeClick(ownerId: Long, itemId: Long, position: Int)
-            fun onDeleteLikeClick(ownerId: Long, itemId: Long, position: Int)
+            fun onAddLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long)
+            fun onDeleteLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long)
             fun onCommentsButtonClick(model: FeedItemModel)
+            fun onReplyButtonClick(model: CommentModel, itemId: Long)
         }
     }
 }

@@ -15,6 +15,6 @@ interface NewsFeedView: MvpView {
     fun showLoading()
     fun hideLoading()
     fun showEmptyList()
-    fun updateLikesCount(likes: LikesResponse, position: Int)
+    fun updateLikesCount(likes: LikesResponse, viewItemId: Long)
     fun showError(message: String)
 }

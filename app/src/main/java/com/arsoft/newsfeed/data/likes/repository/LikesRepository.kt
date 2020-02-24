@@ -1,21 +1,20 @@
 package com.arsoft.newsfeed.data.likes.repository
 
-import android.util.Log
 import com.arsoft.newsfeed.data.likes.request.LikesResponse
 import com.arsoft.newsfeed.data.likes.request.LikesService
 
 class LikesRepository(private val apiService: LikesService) {
 
-    private val TYPE_POST = "post"
     private val VERSION = "5.103"
 
     suspend fun addLike(
+            type: String,
             ownerId: Long,
             itemId: Long,
             accessToken: String): LikesResponse{
 
         return apiService.addLike(
-            type = TYPE_POST,
+            type = type,
             ownerId = ownerId,
             itemId = itemId,
             accessToken = accessToken,
@@ -24,12 +23,13 @@ class LikesRepository(private val apiService: LikesService) {
     }
 
     suspend fun deleteLike(
+        type: String,
         ownerId: Long,
         itemId: Long,
         accessToken: String): LikesResponse{
 
         return apiService.deleteLike(
-            type = TYPE_POST,
+            type = type,
             ownerId = ownerId,
             itemId = itemId,
             accessToken = accessToken,
