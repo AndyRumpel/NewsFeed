@@ -12,4 +12,5 @@
     <dimen name="post_icons_width">20dp</dimen>
     <dimen name="post_icons_height">20dp</dimen>
     <dimen name="send_comment_imagebutton_size">36dp</dimen>
+    <dimen name="sticker_size">256dp</dimen>
 </resources>

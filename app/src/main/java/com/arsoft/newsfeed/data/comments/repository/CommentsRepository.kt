@@ -40,7 +40,7 @@ class CommentsRepository(private val apiService: CommentsService) {
         var avatar = ""
         var date = 0L
         var text = ""
-        val attachments = ArrayList<IAttachment>()
+        var attachments = ArrayList<IAttachment>()
         val sourceProfiles = ArrayList<SourceModel>()
         val commentsList = ArrayList<CommentModel>()
         var threadComments = ArrayList<CommentModel>()
@@ -70,6 +70,7 @@ class CommentsRepository(private val apiService: CommentsService) {
         }
 
         for (item in result.response.items) {
+
             for (source in sourceProfiles) {
                 if(item.from_id == source.id) {
                     name = source.name
@@ -79,6 +80,7 @@ class CommentsRepository(private val apiService: CommentsService) {
 
             text = item.text
             date = item.date
+            attachments = ArrayList()
 
             if (!item.attachments.isNullOrEmpty()) {
                 for (attachment in item.attachments) {
@@ -102,7 +104,6 @@ class CommentsRepository(private val apiService: CommentsService) {
             }
 
             threadComments = ArrayList()
-            threadCommentAttachments = ArrayList()
 
             if (item.thread.count > 0) {
                 for (threadItem in item.thread.items) {
@@ -112,6 +113,9 @@ class CommentsRepository(private val apiService: CommentsService) {
                             threadCommentAvatar = source.avatar
                         }
                     }
+
+                    threadCommentAttachments = ArrayList()
+
                     if (!threadItem.attachments.isNullOrEmpty()) {
                         for (attachment in threadItem.attachments) {
                             when (attachment.type) {

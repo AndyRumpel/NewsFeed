@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
+import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
 import com.bumptech.glide.Glide
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
@@ -48,26 +49,21 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
 
     class CommentsViewHolder(itemView: View, private val onCommentClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
 
-        private val avatarCircleImageView =
-            itemView.findViewById<CircleImageView>(R.id.comment_avatar_imageview)
+        private val avatarCircleImageView = itemView.findViewById<CircleImageView>(R.id.comment_avatar_imageview)
         private val nameTextView = itemView.findViewById<TextView>(R.id.comment_name_textview)
-        private val commentTextTextView =
-            itemView.findViewById<TextView>(R.id.comment_text_textview)
+        private val commentTextTextView = itemView.findViewById<TextView>(R.id.comment_text_textview)
         private val dateTextView = itemView.findViewById<TextView>(R.id.comment_date_textview)
-        private val threadCommentsRecyclerView =
-            itemView.findViewById<RecyclerView>(R.id.thread_comments_recycler)
-        private val commentReplyButton =
-            itemView.findViewById<LinearLayout>(R.id.comment_reply_button)
-        private val commentLikeButton =
-            itemView.findViewById<LinearLayout>(R.id.comment_like_button)
-        private val commentLikeItTextView =
-            itemView.findViewById<TextView>(R.id.comment_likeit_textview)
-        private val commentLikesCountTextView =
-            itemView.findViewById<TextView>(R.id.comment_likes_count)
-        private val commentLikeImageView =
-            itemView.findViewById<ImageView>(R.id.comment_icon_imageview)
+        private val threadCommentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.thread_comments_recycler)
+        private val commentReplyButton = itemView.findViewById<LinearLayout>(R.id.comment_reply_button)
+        private val commentLikeButton = itemView.findViewById<LinearLayout>(R.id.comment_like_button)
+        private val commentLikeItTextView = itemView.findViewById<TextView>(R.id.comment_likeit_textview)
+        private val commentLikesCountTextView = itemView.findViewById<TextView>(R.id.comment_likes_count)
+        private val commentLikeImageView = itemView.findViewById<ImageView>(R.id.comment_icon_imageview)
+        private val attachmentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.comment_attachments_recyclerview)
 
 
+        private val attachmentsAdapter = AttachmentsRecyclerAdapter(onCommentClickListener)
+        private lateinit var attachmentsLayoutManager: MultipleSpanGridLayoutManager
         private val adapter = CommentsRecyclerAdapter(onCommentClickListener)
         private val TYPE_COMMENT = "comment"
 
@@ -133,6 +129,19 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
             commentReplyButton.setOnClickListener {
                 onCommentClickListener.onReplyButtonClick(model = model, itemId = itemId)
             }
+
+            attachmentsLayoutManager =
+                MultipleSpanGridLayoutManager(
+                    context = itemView.context,
+                    spanCount = 4,
+                    items = model.attachments
+                )
+            attachmentsRecyclerView.isNestedScrollingEnabled = false
+            attachmentsRecyclerView.layoutManager = attachmentsLayoutManager
+            attachmentsRecyclerView.adapter = attachmentsAdapter
+            attachmentsRecyclerView.setHasFixedSize(true)
+            attachmentsAdapter.setupAttachments(model.attachments)
+            attachmentsAdapter.notifyDataSetChanged()
 
 
         }

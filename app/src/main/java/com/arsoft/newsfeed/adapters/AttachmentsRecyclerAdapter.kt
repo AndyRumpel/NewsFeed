@@ -1,6 +1,7 @@
 package com.arsoft.newsfeed.adapters
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arsoft.newsfeed.R
-import com.arsoft.newsfeed.data.models.DocModel
-import com.arsoft.newsfeed.data.models.IAttachment
-import com.arsoft.newsfeed.data.models.PhotoModel
-import com.arsoft.newsfeed.data.models.VideoModel
+import com.arsoft.newsfeed.data.models.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.request.RequestOptions.bitmapTransform
@@ -31,8 +29,10 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType) {
             AttachmentTypes.ATTACHMENT_TYPE_PHOTO.ordinal -> AttachmentPhotoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_photo, parent, false), onNewsFeedItemClickListener)
-            AttachmentTypes.ATTACHMENT_TYPE_VIDEO.ordinal ->   AttachmentVideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_video, parent, false), onNewsFeedItemClickListener)
-            else ->                                          AttachmentDocViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_doc, parent, false), onNewsFeedItemClickListener)
+            AttachmentTypes.ATTACHMENT_TYPE_VIDEO.ordinal -> AttachmentVideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_video, parent, false), onNewsFeedItemClickListener)
+            AttachmentTypes.ATTACHMENT_TYPE_DOC.ordinal -> AttachmentDocViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_doc, parent, false), onNewsFeedItemClickListener)
+            else -> AttachmentStickerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.attachment_sticker, parent, false))
+
         }
     }
 
@@ -50,6 +50,9 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
             }
             is DocModel -> {
                 AttachmentTypes.ATTACHMENT_TYPE_DOC.ordinal
+            }
+            is StickerModel -> {
+                AttachmentTypes.ATTACHMENT_TYPE_STICKER.ordinal
             }
             else -> -1
         }
@@ -69,8 +72,25 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
                 val attachmentDocViewHolder = holder as AttachmentDocViewHolder
                 attachmentDocViewHolder.bind(attachments[position] as DocModel)
             }
+            AttachmentTypes.ATTACHMENT_TYPE_STICKER.ordinal -> {
+                val attachmentStickerViewHolder = holder as AttachmentStickerViewHolder
+                attachmentStickerViewHolder.bind(attachments[position] as StickerModel)
+            }
             else -> {}
         }
+    }
+
+    class AttachmentStickerViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        private val stickerImageView = itemView.findViewById<ImageView>(R.id.attachment_sticker_imageview)
+
+        fun bind(model: StickerModel) {
+
+            Log.e("STICKER", model.imageUrl)
+            Glide.with(itemView.context)
+                .load(model.imageUrl)
+                .into(stickerImageView)
+        }
+
     }
 
     class AttachmentDocViewHolder(itemView: View, private val onNewsFeedItemClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
@@ -99,6 +119,8 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
         private val photoImageView = itemView.findViewById<ImageView>(R.id.attachment_photo_image_view)
 
         fun bind(model: PhotoModel, attachments: ArrayList<IAttachment>, position: Int) {
+
+            Log.e("PHOTO", model.url!!)
 
             val multiTransformation =  MultiTransformation<Bitmap>(
                 CropSquareTransformation(),
@@ -171,7 +193,8 @@ class AttachmentsRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFe
     enum class AttachmentTypes {
         ATTACHMENT_TYPE_PHOTO,
         ATTACHMENT_TYPE_VIDEO,
-        ATTACHMENT_TYPE_DOC
+        ATTACHMENT_TYPE_DOC,
+        ATTACHMENT_TYPE_STICKER
     }
 
 

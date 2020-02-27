@@ -68,11 +68,13 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             app:srcCompat="@drawable/ic_reply_comment" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/reply"
             android:textColor="@color/colorAccent"
             android:textSize="12sp" />
@@ -82,7 +84,7 @@
     <LinearLayout
         android:id="@+id/comment_like_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center"
@@ -95,6 +97,7 @@
             android:id="@+id/comment_likeit_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/like_it"
             android:textSize="12sp"
             android:layout_marginEnd="4dp"
@@ -104,15 +107,31 @@
             android:id="@+id/comment_icon_imageview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             app:srcCompat="@drawable/ic_favorite_border" />
 
         <TextView
+            android:layout_gravity="center"
             android:id="@+id/comment_likes_count"
-            tools:text="12"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:text="12" />
 
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comment_attachments_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/comment_date_textview" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/thread_comments_recycler"
@@ -124,6 +143,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/comment_date_textview" />
+        app:layout_constraintTop_toBottomOf="@+id/comment_attachments_recyclerview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

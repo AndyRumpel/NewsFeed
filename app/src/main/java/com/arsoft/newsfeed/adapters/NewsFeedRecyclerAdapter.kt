@@ -89,7 +89,6 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
 
 
         fun bind(model: FeedItemModel) {
-            itemView.tag = model.postId
 
             layoutManager =
                 MultipleSpanGridLayoutManager(

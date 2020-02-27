@@ -95,7 +95,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             isFavorite = item.is_favorite
 
             with(item.likes) {
-                likes = com.arsoft.newsfeed.data.newsfeed.request.Likes(
+                likes = Likes(
                     count = count,
                     can_like = can_like,
                     user_likes = user_likes,
@@ -104,7 +104,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.comments) {
-                comments = com.arsoft.newsfeed.data.newsfeed.request.Comments(
+                comments = Comments(
                     count = count,
                     can_post = can_post,
                     groups_can_post = groups_can_post
@@ -112,7 +112,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
             }
 
             with(item.reposts) {
-                reposts = com.arsoft.newsfeed.data.newsfeed.request.Reposts(
+                reposts = Reposts(
                     count = count,
                     user_reposted = user_reposted
                 )
@@ -120,11 +120,11 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
 
             with(item.views) {
                 if (this?.count == null) {
-                    views = com.arsoft.newsfeed.data.newsfeed.request.Views(
+                    views = Views(
                         count = 0
                     )
                 } else {
-                    views = com.arsoft.newsfeed.data.newsfeed.request.Views(
+                    views = Views(
                         count = count
                     )
                 }
