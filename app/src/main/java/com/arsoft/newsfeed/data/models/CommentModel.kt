@@ -10,6 +10,7 @@ data class CommentModel(
     val likesCount: Int,
     val userLikes: Int,
     val ownerId: Long,
+    val postId: Long,
     val itemId: Long,
     var isFavorite: Boolean
 )

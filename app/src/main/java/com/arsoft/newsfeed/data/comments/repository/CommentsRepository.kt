@@ -1,11 +1,9 @@
 package com.arsoft.newsfeed.data.comments.repository
 
-import android.util.Log
-import com.arsoft.newsfeed.data.comments.request.Attachment
 import com.arsoft.newsfeed.data.comments.request.CommentsResponse
 import com.arsoft.newsfeed.data.comments.request.CommentsService
+import com.arsoft.newsfeed.data.comments.request.CreateCommentResponse
 import com.arsoft.newsfeed.data.models.*
-import kotlin.math.abs
 
 class CommentsRepository(private val apiService: CommentsService) {
 
@@ -34,6 +32,29 @@ class CommentsRepository(private val apiService: CommentsService) {
 
         return parseData(result)
     }
+
+    suspend fun createComment(ownerId: Long, postId: Long, accessToken: String, message: String): CreateCommentResponse {
+        return apiService.createComment(
+            ownerId = ownerId,
+            postId = postId,
+            accessToken = accessToken,
+            message = message,
+            version = VERSION
+        ).await()
+    }
+
+    suspend fun replyComment(ownerId: Long, postId: Long, accessToken: String, replyToComment: Long, message: String): CreateCommentResponse {
+        return apiService.replyComment(
+            ownerId = ownerId,
+            postId = postId,
+            accessToken = accessToken,
+            replyToComment = replyToComment,
+            message = message,
+            version = VERSION
+        ).await()
+    }
+
+
 
     private fun parseData(result: CommentsResponse): java.util.ArrayList<CommentModel> {
         var name = ""
@@ -150,6 +171,7 @@ class CommentsRepository(private val apiService: CommentsService) {
                             likesCount = threadItem.likes.count,
                             userLikes = threadItem.likes.user_likes,
                             ownerId = threadItem.owner_id,
+                            postId = threadItem.post_id,
                             itemId = threadItem.id,
                             isFavorite = isFavorite
                         )
@@ -170,6 +192,7 @@ class CommentsRepository(private val apiService: CommentsService) {
                     likesCount = item.likes.count,
                     userLikes = item.likes.user_likes,
                     ownerId = item.owner_id,
+                    postId = item.post_id,
                     itemId = item.id,
                     isFavorite = isFavorite
                 )

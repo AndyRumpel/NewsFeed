@@ -11,8 +11,12 @@
     <string name="seconds_ago">секунд назад</string>
     <string name="minutes_ago">минут назад</string>
     <string name="hours_ago">часов назад</string>
-    <string name="nothing_to_show">Нет коментариев</string>
+    <string name="comments_nothing_to_show">Нет коментариев</string>
     <string name="comment_send_hint">Оставить коментарий</string>
     <string name="reply">Ответить</string>
     <string name="like_it">Мне нравится</string>
+    <string name="show_more_text">Показать полностью…</string>
+    <string name="hide_text">Скрыть текст</string>
+    <string name="no_connection">Нет подключения к интернету</string>
+    <string name="comments_closed">Коментарии отключены</string>
 </resources>

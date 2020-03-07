@@ -46,7 +46,7 @@ data class PreviewVideo(
 data class Video (
 
     val id : Int,
-    val owner_id : Int,
+    val owner_id : Long,
     val title : String,
     val duration : Int,
     val description : String,
@@ -66,7 +66,8 @@ data class Video (
     val can_like : Int,
     val can_add_to_faves : Int,
     val can_subscribe : Int,
-    val type : String
+    val type : String,
+    val platform : String?
 )
 
 data class Image (
@@ -127,17 +128,17 @@ data class Items (
     val post_id : Long,
     val push_subscription : Push_subscription,
     val track_code : String,
-    val copy_history: List<Copy_history>
+    val copy_history: ArrayList<Copy_history>
 )
 
 data class Copy_history (
-    val id : Int,
-    val owner_id : Int,
-    val from_id : Int,
-    val date : Int,
+    val id : Long,
+    val owner_id : Long,
+    val from_id : Long,
+    val date : Long,
     val post_type : String,
     val text : String,
-    val attachments : List<Attachment>,
+    val attachments : ArrayList<Attachment>,
     val post_source : Post_source
 )
 

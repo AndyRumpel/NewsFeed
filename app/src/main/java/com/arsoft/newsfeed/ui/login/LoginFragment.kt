@@ -4,20 +4,21 @@ package com.arsoft.newsfeed.ui.login
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.app.NewsFeedApplication
-import com.arsoft.newsfeed.app.NewsFeedApplication.Companion.prefs
 import com.arsoft.newsfeed.mvp.login.LoginPresenter
 import com.arsoft.newsfeed.mvp.login.LoginView
 import kotlinx.android.synthetic.main.fragment_login.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class LoginFragment: MvpAppCompatFragment(), LoginView {
+class LoginFragment: MvpAppCompatFragment(), LoginView, TextView.OnEditorActionListener {
 
 
     //MARK -
@@ -64,8 +65,10 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
                 Toast.makeText(context, "Введите допустимые данные", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 
+    //MARK - View implementation
     override fun showLoading() {
         usernameInput.visibility = View.INVISIBLE
         passwordInput.visibility = View.INVISIBLE
@@ -85,5 +88,22 @@ class LoginFragment: MvpAppCompatFragment(), LoginView {
         Log.e("ERROR", message)
     }
 
-
+    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+        if (actionId == EditorInfo.IME_ACTION_NEXT) {
+            if (usernameInput.text.toString().isNotEmpty()) {
+                passwordInput.requestFocus()
+                return true
+            }
+        }
+        if (actionId == EditorInfo.IME_ACTION_SEND) {
+            if (passwordInput.text.toString().isNotEmpty()) {
+                if (usernameInput.text.toString() != "" && passwordInput.text.toString() != "") {
+                    presenter.login(username = usernameInput.text.toString(), password = passwordInput.text.toString())
+                } else {
+                    Toast.makeText(context, "Введите допустимые данные", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        return false
+    }
 }

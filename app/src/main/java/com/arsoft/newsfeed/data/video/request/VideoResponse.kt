@@ -1,6 +1,6 @@
 package com.arsoft.newsfeed.data.video.request
 
-data class VideoPlayerResponse(
+data class VideoResponse(
     val response: Response
 )
 
@@ -57,7 +57,7 @@ data class Items (
     val first_frame : List<First_frame>,
     val files : Files,
     val timeline_thumbs : Timeline_thumbs,
-    val player : String,
+    val player : String?,
     val can_add : Int,
     val can_comment : Int,
     val can_repost : Int,

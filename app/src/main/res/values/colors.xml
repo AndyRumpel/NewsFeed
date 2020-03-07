@@ -4,6 +4,7 @@
     <color name="colorPrimaryTransparent">#3415161F</color>
     <color name="colorPrimaryDark">#191C25</color>
     <color name="colorAccent">#41AFC5</color>
+    <color name="colorPrimaryTransparentAlpha50">#8015161F</color>
     <color name="windowBackground">#212330</color>
     <color name="windowBackgroundLite">#282A3A</color>
 

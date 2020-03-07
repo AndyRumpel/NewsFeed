@@ -8,14 +8,14 @@ import com.arsoft.newsfeed.data.login.repository.LoginRepository
 import com.arsoft.newsfeed.data.login.request.LoginService
 import com.arsoft.newsfeed.data.newsfeed.repository.NewsFeedRepository
 import com.arsoft.newsfeed.data.newsfeed.request.NewsFeedService
-import com.arsoft.newsfeed.data.video.repository.VideoPlayerRepository
-import com.arsoft.newsfeed.data.video.request.VideoPlayerService
+import com.arsoft.newsfeed.data.video.repository.VideoRepository
+import com.arsoft.newsfeed.data.video.request.VideoService
 
 class DataProvider {
     companion object {
-        fun provideAccessToken(): LoginRepository {
+        fun provideAccessToken(apiService: LoginService): LoginRepository {
             return LoginRepository(
-                LoginService.create()
+                apiService
             )
         }
 
@@ -25,21 +25,21 @@ class DataProvider {
             )
         }
 
-        fun provideVideo(): VideoPlayerRepository{
-            return VideoPlayerRepository(
-                VideoPlayerService.create()
+        fun provideVideo(apiService: VideoService): VideoRepository{
+            return VideoRepository(
+                apiService
             )
         }
 
-        fun provideLikes(): LikesRepository {
+        fun provideLikes(apiService: LikesService): LikesRepository {
             return LikesRepository(
-                LikesService.create()
+                apiService
             )
         }
 
-        fun provideComments(): CommentsRepository {
+        fun provideComments(apiService: CommentsService): CommentsRepository {
             return CommentsRepository(
-                CommentsService.create()
+                apiService
             )
         }
 

@@ -1,6 +1,5 @@
 package com.arsoft.newsfeed.ui.video
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,12 +22,17 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
     lateinit var presenter: VideoPlayerPresenter
 
     companion object{
-        fun getNewInstance(videoID: String, videoOwnerID: String) = VideoPlayerFragment().apply {
+        fun getNewInstance(ownerID: Long, videoID: String) = VideoPlayerFragment().apply {
             arguments = Bundle().apply {
+                putLong("owner_id", ownerID)
                 putString("video_id", videoID)
-                putString("video_owner_id", videoOwnerID)
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -41,11 +45,12 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
         controller.setMediaPlayer(video_view)
         video_view.setMediaController(controller)
 
-        presenter.loadPLayer(
-            ownerID = arguments!!.getString("video_owner_id")!!,
-            videoID = arguments!!.getString("video_id")!!,
-            accessToken = Prefs(context!!).accessToken,
-            platform = arguments!!.getString("video_platform"))
+        if (savedInstanceState == null) {
+            presenter.loadVideo(
+                ownerID = arguments!!.getLong("owner_id"),
+                videoID = arguments!!.getString("video_id")!!,
+                accessToken = Prefs(context!!).accessToken)
+        }
     }
 
     override fun onStop() {
@@ -57,15 +62,10 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
         video_view.stopPlayback()
     }
 
-    //View implementation
+    //MARK - View implementation
+    override fun initializePlayer(videoURL: String) {
+        video_view.setVideoURI(Uri.parse(videoURL))
 
-    override fun initializePlayer(videoURL: String, platform: String?) {
-        if (platform == "youtube") {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoURL))
-            startActivity(intent)
-        } else {
-            video_view.setVideoURI(Uri.parse(videoURL))
-        }
     }
 
     override fun playVideo() {
@@ -78,10 +78,6 @@ class VideoPlayerFragment: MvpAppCompatFragment(), VideoPLayerView {
                 video_view.seekTo(0)
             }
         }
-    }
-
-    override fun chooseQuality(qualities: ArrayList<String>){
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun showLoading() {

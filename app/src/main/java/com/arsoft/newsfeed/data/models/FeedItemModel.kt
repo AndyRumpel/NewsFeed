@@ -20,7 +20,9 @@ data class FeedItemModel(
     val ownerId: Long,
     val postId: Long,
     var isFavorite: Boolean,
-    var startFrom: String?
+    var startFrom: String?,
+    val copyHistory: ArrayList<RepostModel>,
+    val canComment: Boolean
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
@@ -35,7 +37,9 @@ data class FeedItemModel(
         parcel.readLong(),
         parcel.readLong(),
         parcel.readByte() != 0.toByte(),
-        parcel.readString()
+        parcel.readString(),
+        TODO("copyHistory"),
+        parcel.readByte() != 0.toByte()
     ) {
     }
 
@@ -48,6 +52,7 @@ data class FeedItemModel(
         parcel.writeLong(postId)
         parcel.writeByte(if (isFavorite) 1 else 0)
         parcel.writeString(startFrom)
+        parcel.writeByte(if (canComment) 1 else 0)
     }
 
     override fun describeContents(): Int {

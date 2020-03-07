@@ -15,9 +15,6 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
     private val ATTACHMENTS_TYPE_PHOTO = "photo"
     private val ATTACHMENTS_TYPE_VIDEO = "video"
     private val ATTACHMENTS_TYPE_DOC = "doc"
-    private val PHOTO_SIZE_WHERE_MAX_SIDE_807PX = 'y'
-    private val PHOTO_SIZE_WHERE_MAX_SIDE_604PX = 'x'
-    private val VIDEO_PREVIEW_IMAGE_WIDTH = 720
 
     private val sourceProfiles = ArrayList<SourceModel>()
     private val newsFeedList = ArrayList<FeedItemModel>()
@@ -52,7 +49,7 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
         var videoPreviewImage = ""
         var videoDuration = 0
         var videoID = ""
-        var videoOwnerID = ""
+        var videoOwnerID = 0L
         var videoPreviewImageWidth = 0
         var attachments: ArrayList<IAttachment>
         var postText = ""
@@ -63,10 +60,11 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
         var ownerId = 0L
         var postId = 0L
         var isFavorite: Boolean
-        var photoWidth = 0
         var startFrom = result.response.next_from
-
+        var copyHistory: ArrayList<RepostModel>
         var isValid: Boolean
+        var repostAttachments: ArrayList<IAttachment>
+        var videoPlatform: String
 
 
         for (item in result.response.profiles) {
@@ -89,10 +87,18 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
         for (item in result.response.items) {
 
             attachments = ArrayList()
+            repostAttachments = ArrayList()
+            copyHistory = ArrayList()
             isValid = true
             ownerId = item.source_id
             postId = item.post_id
             isFavorite = item.is_favorite
+            videoPlatform = ""
+            videoPreviewImage = ""
+            videoDuration = 0
+            videoID = ""
+            videoOwnerID = 0L
+            videoPreviewImageWidth = 0
 
             with(item.likes) {
                 likes = Likes(
@@ -140,6 +146,78 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                 }
             }
 
+            if (!item.copy_history.isNullOrEmpty()) {
+                item.copy_history.forEach {
+
+                    for (source in sourceProfiles) {
+                        if(abs(it.owner_id) == source.id) {
+                            if (!it.attachments.isNullOrEmpty()) {
+                                for (attachment in it.attachments) {
+                                    when(attachment.type) {
+                                        ATTACHMENTS_TYPE_PHOTO -> {
+                                            val photo = attachment.photo.sizes.maxBy { sizes -> sizes.width }
+                                            if (photo != null) {
+                                                repostAttachments.add(PhotoModel(url = photo.url))
+                                            }
+                                        }
+                                        ATTACHMENTS_TYPE_VIDEO -> {
+                                            attachment.video.image.forEach {
+                                                if (it.width in (videoPreviewImageWidth + 1)..999) {
+                                                    videoPreviewImageWidth = it.width
+                                                }
+                                            }
+
+                                            for (image in attachment.video.image) {
+                                                if (videoPreviewImageWidth == image.width) {
+                                                    videoPreviewImage = image.url
+                                                    videoDuration = attachment.video.duration
+                                                    videoOwnerID = attachment.video.owner_id
+                                                    videoID = "${videoOwnerID}_${attachment.video.id}"
+                                                }
+                                            }
+
+                                            if (attachment.video.platform != null) {
+                                                videoPlatform = attachment.video.platform
+                                            } else {
+                                                videoPlatform = "VK"
+                                            }
+
+                                            if (
+                                                videoPreviewImage != "" &&
+                                                videoDuration != 0 &&
+                                                videoID != "" &&
+                                                videoOwnerID != 0L){
+
+                                                repostAttachments.add(VideoModel(
+                                                    previewImage = videoPreviewImage,
+                                                    duration = videoDuration,
+                                                    ownerID = videoOwnerID,
+                                                    videoID = videoID,
+                                                    platform = videoPlatform,
+                                                    title = attachment.video.title
+                                                ))
+
+                                            }
+                                        }
+                                        ATTACHMENTS_TYPE_DOC -> {
+                                            repostAttachments.add(DocModel(url = attachment.doc.url))
+                                        }
+                                    }
+                                }
+                            }
+
+                            copyHistory.add(RepostModel(
+                                avatar = source.avatar,
+                                sourceName = source.name,
+                                postText = it.text,
+                                attachments = repostAttachments,
+                                date = it.date
+                            ))
+                        }
+                    }
+                }
+            }
+
             if (!item.attachments.isNullOrEmpty()) {
                 for (attachment in item.attachments) {
                     when(attachment.type) {
@@ -160,23 +238,31 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                                 if (videoPreviewImageWidth == image.width) {
                                     videoPreviewImage = image.url
                                     videoDuration = attachment.video.duration
-                                    videoOwnerID = attachment.video.owner_id.toString()
+                                    videoOwnerID = attachment.video.owner_id
                                     videoID = "${videoOwnerID}_${attachment.video.id}"
 
                                 }
+                            }
+
+                            if(attachment.video.platform != null) {
+                                videoPlatform = attachment.video.platform
+                            } else {
+                                videoPlatform = "VK"
                             }
 
                             if (
                                 videoPreviewImage != "" &&
                                 videoDuration != 0 &&
                                 videoID != "" &&
-                                videoOwnerID != ""){
+                                videoOwnerID != 0L){
 
                                 attachments.add(VideoModel(
-                                    videoPreviewImage = videoPreviewImage,
-                                    videoDuration = videoDuration,
-                                    videoOwnerID = videoOwnerID,
-                                    videoID = videoID
+                                    previewImage = videoPreviewImage,
+                                    duration = videoDuration,
+                                    ownerID = videoOwnerID,
+                                    videoID = videoID,
+                                    platform = videoPlatform,
+                                    title = attachment.video.title
                                 ))
 
                             }
@@ -203,7 +289,9 @@ class NewsFeedRepository(private val apiService: NewsFeedService) {
                         ownerId = ownerId,
                         postId = postId,
                         isFavorite = isFavorite,
-                        startFrom = startFrom
+                        startFrom = startFrom,
+                        copyHistory = copyHistory,
+                        canComment = item.comments.can_post != 0
                     ))
             }
         }

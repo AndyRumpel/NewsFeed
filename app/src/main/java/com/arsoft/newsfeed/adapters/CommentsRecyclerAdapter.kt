@@ -1,6 +1,7 @@
 package com.arsoft.newsfeed.adapters
 
 import android.graphics.Color
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +16,15 @@ import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
+import com.arsoft.newsfeed.onClick.OnAttachmentClickListener
+import com.arsoft.newsfeed.onClick.OnCommentsItemClickListener
 import com.bumptech.glide.Glide
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.android.synthetic.main.fragment_comments.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CommentsRecyclerAdapter(private val onCommentsItemClickListener: OnCommentsItemClickListener, private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var commentsList = ArrayList<CommentModel>()
 
@@ -32,7 +36,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.comment_item, parent,false)
-        return CommentsViewHolder(itemView, onCommentClickListener)
+        return CommentsViewHolder(itemView, onCommentsItemClickListener, onAttachmentClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -47,7 +51,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
         (holder as CommentsViewHolder).bind(commentsList[position])
     }
 
-    class CommentsViewHolder(itemView: View, private val onCommentClickListener: NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.ViewHolder(itemView) {
+    class CommentsViewHolder(itemView: View, private val onCommentsItemClickListener: OnCommentsItemClickListener, private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.ViewHolder(itemView) {
 
         private val avatarCircleImageView = itemView.findViewById<CircleImageView>(R.id.comment_avatar_imageview)
         private val nameTextView = itemView.findViewById<TextView>(R.id.comment_name_textview)
@@ -62,16 +66,17 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
         private val attachmentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.comment_attachments_recyclerview)
 
 
-        private val attachmentsAdapter = AttachmentsRecyclerAdapter(onCommentClickListener)
+        private val attachmentsAdapter = AttachmentsRecyclerAdapter(onAttachmentClickListener)
         private lateinit var attachmentsLayoutManager: MultipleSpanGridLayoutManager
-        private val adapter = CommentsRecyclerAdapter(onCommentClickListener)
+        private val adapter = CommentsRecyclerAdapter(onCommentsItemClickListener, onAttachmentClickListener)
         private val TYPE_COMMENT = "comment"
 
         fun bind(model: CommentModel) {
 
 
-
-            adapter.setHasStableIds(true)
+            if(!adapter.hasObservers()) {
+                adapter.setHasStableIds(true)
+            }
             threadCommentsRecyclerView.adapter = adapter
             threadCommentsRecyclerView.layoutManager =
                 LinearLayoutManager(itemView.context, RecyclerView.VERTICAL, false)
@@ -104,7 +109,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
 
             commentLikeButton.setOnClickListener {
                 if (!model.isFavorite) {
-                    onCommentClickListener.onAddLikeClick(
+                    onCommentsItemClickListener.onAddLikeClick(
                         type = TYPE_COMMENT,
                         ownerId = model.ownerId,
                         itemId = model.itemId,
@@ -114,7 +119,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
                     model.isFavorite = true
                     changeLikeButtonColorToAdded()
                 } else {
-                    onCommentClickListener.onDeleteLikeClick(
+                    onCommentsItemClickListener.onDeleteLikeClick(
                         type = TYPE_COMMENT,
                         ownerId = model.ownerId,
                         itemId = model.itemId,
@@ -127,7 +132,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
             }
 
             commentReplyButton.setOnClickListener {
-                onCommentClickListener.onReplyButtonClick(model = model, itemId = itemId)
+                onCommentsItemClickListener.onReplyButtonClick(model = model, itemId = itemId)
             }
 
             attachmentsLayoutManager =
@@ -142,6 +147,7 @@ class CommentsRecyclerAdapter(val onCommentClickListener: NewsFeedRecyclerAdapte
             attachmentsRecyclerView.setHasFixedSize(true)
             attachmentsAdapter.setupAttachments(model.attachments)
             attachmentsAdapter.notifyDataSetChanged()
+
 
 
         }

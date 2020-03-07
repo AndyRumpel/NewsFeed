@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/repost_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/repost_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_reply" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/repost_avatar"
+        android:layout_width="@dimen/repost_avatar_size"
+        android:layout_height="@dimen/repost_avatar_size"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/repost_icon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/repost_source_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        app:layout_constraintStart_toEndOf="@+id/repost_avatar"
+        app:layout_constraintTop_toTopOf="@+id/repost_avatar"
+        tools:text="Andy Rumpel" />
+
+    <TextView
+        android:id="@+id/repost_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/repost_avatar"
+        app:layout_constraintStart_toEndOf="@+id/repost_avatar"
+        app:layout_constraintTop_toBottomOf="@+id/repost_source_name"
+        tools:text="Just now" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

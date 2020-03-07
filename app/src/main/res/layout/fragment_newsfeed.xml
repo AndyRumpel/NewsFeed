@@ -8,9 +8,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/newsfeed_recycler"
             android:layout_width="match_parent"
@@ -23,12 +24,6 @@
             app:cpv_animAutostart="true"
             app:cpv_color="@color/colorAccent"
             app:cpv_indeterminate="true"
-            android:layout_gravity="center"
-            />
-
-
-    </FrameLayout>
-
-
-
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

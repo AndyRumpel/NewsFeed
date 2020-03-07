@@ -24,7 +24,7 @@ data class Items (
 
     val id : Long,
     val from_id : Long,
-    val post_id : Int,
+    val post_id : Long,
     val owner_id : Long,
     val parents_stack : List<String>,
     val date : Long,

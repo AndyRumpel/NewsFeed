@@ -73,15 +73,15 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
-    kapt 'com.github.bumptech.glide:compiler:4.10.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'jp.wasabeef:glide-transformations:4.1.0'
 
     //CircleIndicator
     implementation 'me.relex:circleindicator:2.1.4'
 
-    //Expandable TextView
-    implementation "com.ms-square:expandableTextView:0.1.4"
+    //ExpandableTextView
+    implementation 'at.blogc:expandabletextview:1.0.5'
 
     //CollageView
     implementation'com.github.lopei:collageview:0.1.3'

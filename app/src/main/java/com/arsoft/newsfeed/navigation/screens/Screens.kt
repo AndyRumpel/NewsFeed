@@ -1,5 +1,8 @@
 package com.arsoft.newsfeed.navigation.screens
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.ui.comments.CommentsFragment
@@ -29,11 +32,11 @@ class Screens {
     }
 
     class VideoPlayerScreen(
-        private val videoID: String,
-        private val videoOwnerID: String
+        private val ownerID: Long,
+        private val videoID: String
     ): SupportAppScreen() {
         override fun getFragment(): Fragment {
-            return VideoPlayerFragment.getNewInstance(videoID = videoID, videoOwnerID = videoOwnerID)
+            return VideoPlayerFragment.getNewInstance(ownerID = ownerID, videoID = videoID)
         }
     }
 
@@ -42,6 +45,13 @@ class Screens {
     ): SupportAppScreen() {
         override fun getFragment(): Fragment {
             return CommentsFragment.getNewInstance(model = model)
+        }
+    }
+
+    class ExternalPlayerActivity(private val videoURL: String): SupportAppScreen(){
+        override fun getActivityIntent(context: Context?): Intent {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoURL))
+            return Intent.createChooser(intent, "Choose App")
         }
     }
 }

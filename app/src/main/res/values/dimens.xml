@@ -7,10 +7,13 @@
     <dimen name="logo_size">120dp</dimen>
     <dimen name="cpv_size">56dp</dimen>
     <dimen name="post_avatar_size">56dp</dimen>
+    <dimen name="repost_avatar_size">48dp</dimen>
     <dimen name="margin_all">2dp</dimen>
     <dimen name="attachments_photo_corner_radius">5dp</dimen>
-    <dimen name="post_icons_width">20dp</dimen>
-    <dimen name="post_icons_height">20dp</dimen>
+    <dimen name="post_icons_width">24dp</dimen>
+    <dimen name="post_icons_height">24dp</dimen>
     <dimen name="send_comment_imagebutton_size">36dp</dimen>
     <dimen name="sticker_size">256dp</dimen>
+    <dimen name="no_internet_icon_size">56dp</dimen>
+    <dimen name="comment_edittext_width">350dp</dimen>
 </resources>

@@ -8,26 +8,29 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import at.blogc.android.views.ExpandableTextView
 import com.arsoft.newsfeed.R
-import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.MyDateTimeFormatHelper
 import com.arsoft.newsfeed.helpers.recycler.MultipleSpanGridLayoutManager
+import com.arsoft.newsfeed.onClick.OnAttachmentClickListener
+import com.arsoft.newsfeed.onClick.OnNewsFeedItemClickListener
 import com.bumptech.glide.Glide
-import com.ms.square.android.expandabletextview.ExpandableTextView
+import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedViewHolder.OnNewsFeedItemClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: OnNewsFeedItemClickListener, private val onAttachmentClickListener: OnAttachmentClickListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val newsFeedList: ArrayList<FeedItemModel> = ArrayList()
     private lateinit var loadMoreOwner: LoadMoreOwner
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.feed_item, parent, false)
-        return NewsFeedViewHolder(itemView, onNewsFeedItemClickListener)
+        return NewsFeedViewHolder(itemView, onNewsFeedItemClickListener, onAttachmentClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -39,15 +42,15 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
     }
 
     fun setupNewsFeedList(items: ArrayList<FeedItemModel>){
-        newsFeedList.addAll(items)
-    }
-
-    fun addMoreNewsFeedListItems(items: ArrayList<FeedItemModel>) {
         newsFeedList.clear()
         newsFeedList.addAll(items)
     }
 
-    fun setLoadMoreCallback(loadMoreOwner: LoadMoreOwner) {
+    fun addMoreNewsFeedListItems(items: ArrayList<FeedItemModel>) {
+        newsFeedList.addAll(items)
+    }
+
+    fun setLoadMoreOwner(loadMoreOwner: LoadMoreOwner) {
         this.loadMoreOwner = loadMoreOwner
     }
 
@@ -67,12 +70,13 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         fun loadMore(startFrom: String)
     }
 
-    class NewsFeedViewHolder(itemView: View, private val onNewsFeedItemClickListener: OnNewsFeedItemClickListener) : RecyclerView.ViewHolder(itemView){
+    class NewsFeedViewHolder(itemView: View, private val onNewsFeedItemClickListener: OnNewsFeedItemClickListener, private val onAttachmentClickListener: OnAttachmentClickListener) : RecyclerView.ViewHolder(itemView){
 
 
-        private val avatarImg= itemView.findViewById<ImageView>(R.id.post_avatar)
-        private val sourceNameTxt = itemView.findViewById<TextView>(R.id.post_source_name)
-        private val postTextTxt = itemView.findViewById<ExpandableTextView>(R.id.post_expandable_text_view)
+        private val avatarImageView= itemView.findViewById<ImageView>(R.id.post_avatar)
+        private val sourceNameTextView = itemView.findViewById<TextView>(R.id.post_source_name)
+        private val postTextTextView = itemView.findViewById<ExpandableTextView>(R.id.post_expandable_text_view)
+        private val showMoreTextView = itemView.findViewById<TextView>(R.id.show_more_text_view)
         private val attachmentsRecyclerView = itemView.findViewById<RecyclerView>(R.id.attachments_recycler_view)
         private val dateTextView = itemView.findViewById<TextView>(R.id.post_date_time)
         private val likesButton = itemView.findViewById<ImageButton>(R.id.likes_button)
@@ -81,44 +85,120 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
         private val commentsCountTextView = itemView.findViewById<TextView>(R.id.comments_count_textview)
         private val repostsCountTextView = itemView.findViewById<TextView>(R.id.reposts_count_textview)
         private val viewsCountTextView = itemView.findViewById<TextView>(R.id.views_count_textview)
+        private val repostItem = itemView.findViewById<ConstraintLayout>(R.id.repost_item)
+        private val repostAvatarImageView = itemView.findViewById<CircleImageView>(R.id.repost_avatar)
+        private val repostNameTextView = itemView.findViewById<TextView>(R.id.repost_source_name)
+        private val repostDateTextView = itemView.findViewById<TextView>(R.id.repost_date_time)
 
-        private val adapter = AttachmentsRecyclerAdapter(onNewsFeedItemClickListener)
-        private lateinit var layoutManager: MultipleSpanGridLayoutManager
+        private val attachmentsAdapter = AttachmentsRecyclerAdapter(onAttachmentClickListener)
+        private lateinit var attachmentsLayoutManager: MultipleSpanGridLayoutManager
         private var currentTime = 0L
         private val TYPE_POST = "post"
 
 
         fun bind(model: FeedItemModel) {
 
-            layoutManager =
+            attachmentsLayoutManager =
                 MultipleSpanGridLayoutManager(
                     context = itemView.context,
                     spanCount = 4,
                     items = model.attachments
                 )
+
+
             attachmentsRecyclerView.isNestedScrollingEnabled = false
-            attachmentsRecyclerView.layoutManager = layoutManager
-            attachmentsRecyclerView.adapter = adapter
+            attachmentsRecyclerView.layoutManager = attachmentsLayoutManager
+            attachmentsRecyclerView.adapter = attachmentsAdapter
             attachmentsRecyclerView.setHasFixedSize(true)
-            adapter.setupAttachments(attachments = model.attachments)
-            adapter.notifyDataSetChanged()
+            attachmentsAdapter.setupAttachments(attachments = model.attachments)
+            attachmentsAdapter.notifyDataSetChanged()
 
 
             if (model.avatar!!.isNotEmpty()) {
                 Glide.with(itemView.context)
                     .load(model.avatar)
-                    .into(avatarImg)
+                    .into(avatarImageView)
             }
-            sourceNameTxt.text = model.sourceName
+            sourceNameTextView.text = model.sourceName
+            postTextTextView.text = model.postText
 
-            postTextTxt.text = model.postText
+            postTextTextView.post {
+                if (postTextTextView.lineCount >= 10) {
+                    showMoreTextView.visibility = View.VISIBLE
+                    showMoreTextView.textSize = 14F
+                } else {
+                    showMoreTextView.visibility = View.INVISIBLE
+                    showMoreTextView.textSize = 0F
+                }
+            }
+
+            showMoreTextView.setOnClickListener {
+                if (postTextTextView.isExpanded) {
+                    postTextTextView.collapse()
+                    showMoreTextView.text = itemView.resources.getText(R.string.show_more_text)
+                } else {
+                    postTextTextView.expand()
+                    showMoreTextView.text = itemView.resources.getText(R.string.hide_text)
+                }
+            }
 
             currentTime = Calendar.getInstance().timeInMillis
             dateTextView.text = MyDateTimeFormatHelper.timeFormat(postDate = model.date * 1000, currentTime = currentTime)
 
             setupLikes(model = model)
 
+            commentsButton.setOnClickListener{
+                onNewsFeedItemClickListener.onCommentsButtonClick(model = model)
+            }
 
+            if (!model.copyHistory.isNullOrEmpty()) {
+                repostItem.visibility = View.VISIBLE
+                with(model.copyHistory.first()){
+
+                    Glide.with(itemView.context)
+                        .load(avatar)
+                        .into(repostAvatarImageView)
+
+                    repostNameTextView.text = sourceName
+                    repostDateTextView.text = MyDateTimeFormatHelper.timeFormat(postDate = date * 1000, currentTime = currentTime)
+                    postTextTextView.text = postText
+
+                    postTextTextView.post {
+                        if (postTextTextView.lineCount >= 10) {
+                            showMoreTextView.visibility = View.VISIBLE
+                            showMoreTextView.textSize = 14F
+                        } else {
+                            showMoreTextView.visibility = View.INVISIBLE
+                            showMoreTextView.textSize = 0F
+                        }
+                    }
+
+                    showMoreTextView.setOnClickListener {
+                        if (postTextTextView.isExpanded) {
+                            postTextTextView.collapse()
+                            showMoreTextView.text = itemView.resources.getText(R.string.show_more_text)
+                        } else {
+                            postTextTextView.expand()
+                            showMoreTextView.text = itemView.resources.getText(R.string.hide_text)
+                        }
+                    }
+
+                    attachmentsLayoutManager =
+                        MultipleSpanGridLayoutManager(
+                            context = itemView.context,
+                            spanCount = 4,
+                            items = attachments
+                        )
+                    attachmentsRecyclerView.isNestedScrollingEnabled = false
+                    attachmentsRecyclerView.layoutManager = attachmentsLayoutManager
+                    attachmentsRecyclerView.adapter = attachmentsAdapter
+                    attachmentsRecyclerView.setHasFixedSize(true)
+                    attachmentsAdapter.setupAttachments(attachments = attachments)
+                    attachmentsAdapter.notifyDataSetChanged()
+                }
+            } else {
+                repostItem.visibility = View.GONE
+            }
         }
 
         private fun setupLikes(model: FeedItemModel) {
@@ -180,19 +260,7 @@ class NewsFeedRecyclerAdapter(private val onNewsFeedItemClickListener: NewsFeedV
                     likesCountTextView.setTextColor(Color.WHITE)
                 }
             }
-
-            commentsButton.setOnClickListener{
-                onNewsFeedItemClickListener.onCommentsButtonClick(model = model)
-            }
         }
 
-        interface OnNewsFeedItemClickListener{
-            fun onPhotoClick(photoURLs: ArrayList<String?> ,position: Int)
-            fun onVideoClick(videoID: String, videoOwnerID: String)
-            fun onAddLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long)
-            fun onDeleteLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long)
-            fun onCommentsButtonClick(model: FeedItemModel)
-            fun onReplyButtonClick(model: CommentModel, itemId: Long)
-        }
     }
 }

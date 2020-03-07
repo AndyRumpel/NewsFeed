@@ -1,7 +1,10 @@
 package com.arsoft.newsfeed.ui.newsfeed
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arellomobile.mvp.MvpAppCompatFragment
@@ -10,23 +13,26 @@ import com.arsoft.newsfeed.R
 import com.arsoft.newsfeed.adapters.NewsFeedRecyclerAdapter
 import com.arsoft.newsfeed.app.NewsFeedApplication
 import com.arsoft.newsfeed.data.likes.request.LikesResponse
-import com.arsoft.newsfeed.data.models.CommentModel
 import com.arsoft.newsfeed.data.models.FeedItemModel
 import com.arsoft.newsfeed.helpers.recycler.NewsFeedItemDecoration
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedPresenter
 import com.arsoft.newsfeed.mvp.newsfeed.NewsFeedView
 import com.arsoft.newsfeed.navigation.screens.Screens
+import com.arsoft.newsfeed.onClick.OnAttachmentClickListener
+import com.arsoft.newsfeed.onClick.OnNewsFeedItemClickListener
+import com.arsoft.newsfeed.ui.main.MainActivity
 import kotlinx.android.synthetic.main.feed_item.view.*
 import kotlinx.android.synthetic.main.fragment_newsfeed.*
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
 class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAdapter.LoadMoreOwner,
-    NewsFeedRecyclerAdapter.NewsFeedViewHolder.OnNewsFeedItemClickListener {
+    OnNewsFeedItemClickListener, OnAttachmentClickListener{
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: NewsFeedRecyclerAdapter
-    private var accessToken: String? = ""
+    private var accessToken: String = ""
+    private var newsFeedList = ArrayList<FeedItemModel>()
 
     companion object{
         fun getNewInstance(accessToken: String) = NewsFeedFragment().apply {
@@ -52,13 +58,16 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
         return view
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        accessToken = arguments?.getString("access_token")
+        accessToken = arguments?.getString("access_token")!!
 
-        if (arguments != null) {
-            presenter.loadNewsFeed(accessToken = accessToken!!)
+        if (savedInstanceState == null) {
+            if (arguments != null) {
+                presenter.loadNewsFeed(accessToken = accessToken!!)
+            }
         }
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -66,42 +75,18 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
             swipeRefreshLayout.isRefreshing = false
         }
 
-        adapter = NewsFeedRecyclerAdapter(onNewsFeedItemClickListener = this)
-        adapter.setLoadMoreCallback(this)
+        adapter = NewsFeedRecyclerAdapter(onNewsFeedItemClickListener = this, onAttachmentClickListener = this)
+        adapter.setLoadMoreOwner(this)
         adapter.setHasStableIds(true)
         recyclerView.adapter = adapter
+        recyclerView.setHasFixedSize(true)
+        recyclerView.setItemViewCacheSize(20)
+        recyclerView.isDrawingCacheEnabled = true
+        recyclerView.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
         recyclerView.addItemDecoration(NewsFeedItemDecoration(20))
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         setHasOptionsMenu(true)
 
-//        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//                if(newState == adapter.itemCount) {
-//
-//                }
-//            }
-//        })
-
-    }
-
-
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.newsfeed_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when(item.itemId){
-            R.id.logout -> {
-                router.newRootChain(Screens.LoginScreen())
-                NewsFeedApplication.prefs!!.accessToken = "0"
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
@@ -109,13 +94,33 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
         adapter.notifyDataSetChanged()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.newsfeed_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.logout -> {
+                router.newRootChain(Screens.LoginScreen())
+                NewsFeedApplication.prefs!!.accessToken = "0"
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+
+    //MARK - View Implementation
     override fun loadNewsFeed(items: ArrayList<FeedItemModel>) {
+        newsFeedList.clear()
+        newsFeedList.addAll(items)
         adapter.setupNewsFeedList(items = items)
         adapter.notifyDataSetChanged()
     }
 
     override fun loadMoreNewsFeed(items: ArrayList<FeedItemModel>) {
-        adapter.addMoreNewsFeedListItems(items)
+        adapter.addMoreNewsFeedListItems(items = items)
         adapter.notifyDataSetChanged()
     }
 
@@ -134,50 +139,59 @@ class NewsFeedFragment: MvpAppCompatFragment(), NewsFeedView, NewsFeedRecyclerAd
         newsfeed_cpv.visibility = View.INVISIBLE
     }
 
-    override fun showEmptyList() {
-    }
-
     override fun showError(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
-
 
     override fun updateLikesCount(likes: LikesResponse, viewItemId: Long) {
         with(recyclerView.findViewHolderForItemId(viewItemId)!!.itemView.likes_count_textview){
-            if (likes.response.likes == 0) {
-                text = ""
+            text = if (likes.response.likes == 0) {
+                ""
             } else {
-                text = likes.response.likes.toString()
+                likes.response.likes.toString()
             }
         }
     }
 
-    override fun loadMore(startFrom: String) {
-        presenter.loadMoreNewsFeed(accessToken = accessToken!!, startFrom = startFrom)
+    override fun openExternalPlayer(videoURL: String) {
+        router.replaceScreen(Screens.ExternalPlayerActivity(videoURL = videoURL))
     }
 
-    // OnItemClickListener implementation
+
+
+
+    //MARK -  LoadMoreOwner implementation
+    override fun loadMore(startFrom: String) {
+        presenter.loadMoreNewsFeed(accessToken = accessToken, startFrom = startFrom)
+    }
+
+
+
+
+    //MARK -  OnAttachmentsClickListener implementation
     override fun onPhotoClick(photoURLs: ArrayList<String?>, position: Int) {
         router.navigateTo(Screens.ViewPhotoScreen(photoURLs = photoURLs,position =  position))
     }
 
-    override fun onVideoClick(videoID: String, videoOwnerID: String) {
-        router.navigateTo(Screens.VideoPlayerScreen(videoID = videoID, videoOwnerID = videoOwnerID))
+    override fun onVkVideoClick(ownerID: Long, videoID: String) {
+        router.navigateTo(Screens.VideoPlayerScreen(ownerID = ownerID, videoID = videoID))
     }
 
+    override fun onExternalVideoClick(ownerID: Long, videoID: String) {
+        presenter.loadExternalVideo(ownerID = ownerID, videoID = videoID, accessToken = accessToken)
+    }
+
+
+    //MARK - OnNewsFeedItemClickListener implementation
     override fun onAddLikeClick(type: String ,ownerId: Long, itemId: Long, viewItemId: Long) {
-        presenter.addLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = arguments!!.getString("access_token")!!)
+        presenter.addLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = accessToken)
     }
 
     override fun onDeleteLikeClick(type: String, ownerId: Long, itemId: Long, viewItemId: Long) {
-        presenter.deleteLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = arguments!!.getString("access_token")!!)
+        presenter.deleteLike(type = type, ownerId = ownerId, itemId = itemId, viewItemId = viewItemId, accessToken = accessToken)
     }
 
     override fun onCommentsButtonClick(model: FeedItemModel) {
         router.navigateTo(Screens.CommentsScreen(model = model))
     }
-
-    override fun onReplyButtonClick(model: CommentModel, itemId: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
 }
